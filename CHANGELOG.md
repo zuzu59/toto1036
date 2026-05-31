@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.14 — 31/05/2026 15:15
+- Hamburger légèrement décalé vers l’intérieur
+- Menu plus élégant sur smartphone
+- Meilleur confort visuel au bord de l’écran
+
 ## v0.0.13 — 31/05/2026 15:14
 - Hamburger aligné à droite sur smartphone
 - Menu plus naturel sur petit écran
