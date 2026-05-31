@@ -46,7 +46,13 @@
     </main>
 
     <footer class="app-footer">
-      <span>Release {{ appRelease }} · {{ appBuildLabel }}</span>
+      <div class="app-footer__release">Release {{ appRelease }} · {{ appBuildLabel }}</div>
+      <details class="app-footer__changelog">
+        <summary>Changelog</summary>
+        <ul>
+          <li v-for="entry in appChangelog" :key="entry">{{ entry }}</li>
+        </ul>
+      </details>
     </footer>
   </div>
 </template>
@@ -59,7 +65,7 @@ import SearchBar from '@/components/SearchBar.vue'
 import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, importContacts, importContactsCsv, listContacts, searchContacts, updateContact } from '@/services/contacts'
 import type { Contact } from '@/types/contact'
 import { contactToDraft, createEmptyContactDraft, hasMeaningfulValue } from '@/utils/contacts'
-import { APP_BUILD_TIME, APP_RELEASE } from '@/version'
+import { APP_BUILD_TIME, APP_CHANGELOG, APP_RELEASE } from '@/version'
 
 const contacts = ref<Contact[]>([])
 const query = ref('')
@@ -78,6 +84,7 @@ let refreshTimer: number | undefined
 
 const onlineLabel = computed(() => (online.value ? 'En ligne' : 'Hors ligne'))
 const appRelease = APP_RELEASE
+const appChangelog = APP_CHANGELOG
 const appBuildLabel = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'short',
   timeStyle: 'short',
