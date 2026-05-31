@@ -13,6 +13,7 @@
         <details ref="hamburgerMenu" class="app-hamburger">
           <summary aria-label="Ouvrir le menu">☰</summary>
           <div class="app-hamburger__menu">
+            <button class="ghost-button" type="button" @click="openHelpAndClose">Help</button>
             <button class="ghost-button" type="button" @click="exportAndClose('json')">Exporter JSON</button>
             <button class="ghost-button" type="button" @click="exportAndClose('csv')">Exporter CSV</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('json')">Importer JSON</button>
@@ -21,7 +22,6 @@
             <button class="ghost-button" type="button" @click="openAboutAndClose">
               {{ updateAvailable ? 'About · nouvelle version disponible' : 'About' }}
             </button>
-            <button class="ghost-button" type="button" @click="openHelpAndClose">Help</button>
           </div>
         </details>
       </div>

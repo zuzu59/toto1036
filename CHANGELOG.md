@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.0 — 31/05/2026 15:56
+- Help placé en premier dans le hamburger
+- Passage à la version majeure 0.1.0
+- Menu mobile encore plus ergonomique
+
 ## v0.0.23 — 31/05/2026 15:52
 - About vérifie la dernière release GitHub en ligne
 - Le changelog se consulte directement sur GitHub
