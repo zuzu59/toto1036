@@ -2,7 +2,6 @@
   <div class="app-shell">
     <header class="app-header">
       <div>
-        <p class="eyebrow">Offline-first · local only</p>
         <h1>z-PWA Contacts</h1>
         <p class="lead">Carnet de contacts installable, rapide et utilisable sans réseau.</p>
       </div>
@@ -42,7 +41,7 @@
         <ContactList :contacts="contacts" :selected-id="selectedContactId" @select="selectContact" />
       </section>
 
-      <section class="panel panel--editor">
+      <section v-if="showEditor" class="panel panel--editor">
         <ContactForm
           v-model="draft"
           :mode="editorMode"
@@ -111,6 +110,7 @@ const contacts = ref<Contact[]>([])
 const query = ref('')
 const selectedContactId = ref<number | null>(null)
 const editorMode = ref<'create' | 'edit'>('create')
+const showEditor = ref(false)
 const draft = ref(createEmptyContactDraft())
 const saving = ref(false)
 const notice = ref('')
@@ -165,6 +165,7 @@ async function refreshContacts() {
 function startNewContact() {
   selectedContactId.value = null
   editorMode.value = 'create'
+  showEditor.value = true
   draft.value = createEmptyContactDraft()
   duplicateMessage.value = null
 }
@@ -177,6 +178,7 @@ function selectContact(id: number) {
 
   selectedContactId.value = contact.id
   editorMode.value = 'edit'
+  showEditor.value = true
   draft.value = contactToDraft(contact)
   duplicateMessage.value = null
 }
@@ -191,6 +193,7 @@ function resetEditor() {
     }
   }
 
+  showEditor.value = false
   startNewContact()
 }
 

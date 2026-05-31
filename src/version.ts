@@ -1,7 +1,17 @@
-export const APP_RELEASE = 'v0.0.15'
+export const APP_RELEASE = 'v0.0.16'
 export const APP_BUILD_TIME = __APP_BUILD_TIME__
 
 export const APP_CHANGELOG = [
+  {
+    tag: 'v0.0.16',
+    dateTime: '31/05/2026 15:21',
+    entries: [
+      'Texte “Offline-first” retiré de l’en-tête',
+      'Formulaire masqué tant qu’on n’a pas créé ou sélectionné un contact',
+      'Vue smartphone simplifiée',
+    ],
+    releaseUrl: 'https://github.com/zuzu59/z-PWA/releases/tag/v0.0.16',
+  },
   {
     tag: 'v0.0.15',
     dateTime: '31/05/2026 15:18',

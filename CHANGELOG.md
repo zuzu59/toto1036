@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.16 — 31/05/2026 15:21
+- Texte “Offline-first” retiré de l’en-tête
+- Formulaire masqué tant qu’on n’a pas créé ou sélectionné un contact
+- Vue smartphone simplifiée
+
 ## v0.0.15 — 31/05/2026 15:18
 - Menu du hamburger rendu plus compact
 - Moins de padding pour les actions secondaires
