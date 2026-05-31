@@ -380,7 +380,8 @@ textarea {
   text-align: center;
 }
 
-.app-changelog-overlay {
+.app-changelog-overlay,
+.app-about-overlay {
   position: fixed;
   inset: 0;
   padding: 1rem;
@@ -390,7 +391,8 @@ textarea {
   z-index: 50;
 }
 
-.app-changelog-panel {
+.app-changelog-panel,
+.app-about-panel {
   width: min(100%, 720px);
   max-height: min(86vh, 900px);
   overflow: auto;
@@ -411,6 +413,15 @@ textarea {
 
 .app-changelog-panel__header h2 {
   margin: 0;
+}
+
+.app-about-list {
+  margin: 0.75rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.app-about-list li + li {
+  margin-top: 0.35rem;
 }
 
 .app-footer__changelog-group {

@@ -19,6 +19,7 @@
             <button class="ghost-button" type="button" @click="openImportAndClose('json')">Importer JSON</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('csv')">Importer CSV</button>
             <button class="ghost-button" type="button" @click="openChangelogAndClose">Voir le changelog</button>
+            <button class="ghost-button" type="button" @click="openAboutAndClose">About</button>
           </div>
         </details>
       </div>
@@ -75,6 +76,22 @@
         </section>
       </div>
     </section>
+
+    <section v-if="showAbout" class="app-about-overlay" role="dialog" aria-modal="true" aria-labelledby="about-title" @click.self="closeAbout">
+      <div class="app-about-panel">
+        <div class="app-changelog-panel__header">
+          <h2 id="about-title">About</h2>
+          <button class="ghost-button" type="button" @click="closeAbout">Fermer</button>
+        </div>
+        <p><strong>z-PWA Contacts</strong> est un carnet de contacts offline-first pour smartphone.</p>
+        <ul class="app-about-list">
+          <li>Stack : Vue 3, Vite, TypeScript, Dexie, vite-plugin-pwa</li>
+          <li>Stockage local uniquement</li>
+          <li>Import/export JSON et CSV</li>
+          <li>Version : {{ appRelease }} · {{ appBuildLabel }}</li>
+        </ul>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -101,6 +118,7 @@ const importInput = ref<HTMLInputElement | null>(null)
 const importMode = ref<'json' | 'csv'>('json')
 const hamburgerMenu = ref<HTMLDetailsElement | null>(null)
 const showChangelog = ref(false)
+const showAbout = ref(false)
 const online = ref(navigator.onLine)
 const refreshToken = ref(0)
 let refreshTimer: number | undefined
@@ -294,6 +312,19 @@ function closeChangelog() {
 function openChangelogAndClose() {
   closeHamburgerMenu()
   openChangelog()
+}
+
+function openAbout() {
+  showAbout.value = true
+}
+
+function closeAbout() {
+  showAbout.value = false
+}
+
+function openAboutAndClose() {
+  closeHamburgerMenu()
+  openAbout()
 }
 
 function openImportPicker(mode: 'json' | 'csv') {

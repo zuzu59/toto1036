@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.11 — 31/05/2026 15:10
+- Ajout d’un panneau About dans le hamburger
+- Infos projet plus accessibles sur mobile
+- Navigation secondaire toujours optimisée pour smartphone
+
 ## v0.0.10 — 31/05/2026 15:07
 - Le hamburger se referme quand on clique en dehors
 - Menu mobile plus naturel à quitter
