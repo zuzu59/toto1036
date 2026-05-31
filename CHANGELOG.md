@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.17 — 31/05/2026 15:23
+- Bouton Supprimer affiché uniquement en édition
+- Vue simplifiée tant qu’aucun contact n’est ouvert
+- Interface plus sûre pour le mobile
+
 ## v0.0.16 — 31/05/2026 15:21
 - Texte “Offline-first” retiré de l’en-tête
 - Formulaire masqué tant qu’on n’a pas créé ou sélectionné un contact

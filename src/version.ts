@@ -1,7 +1,17 @@
-export const APP_RELEASE = 'v0.0.16'
+export const APP_RELEASE = 'v0.0.17'
 export const APP_BUILD_TIME = __APP_BUILD_TIME__
 
 export const APP_CHANGELOG = [
+  {
+    tag: 'v0.0.17',
+    dateTime: '31/05/2026 15:23',
+    entries: [
+      'Bouton Supprimer affiché uniquement en édition',
+      'Vue simplifiée tant qu’aucun contact n’est ouvert',
+      'Interface plus sûre pour le mobile',
+    ],
+    releaseUrl: 'https://github.com/zuzu59/z-PWA/releases/tag/v0.0.17',
+  },
   {
     tag: 'v0.0.16',
     dateTime: '31/05/2026 15:21',

@@ -31,7 +31,7 @@
       <section class="panel panel--list">
         <div class="panel__actions">
           <button class="primary-button" type="button" @click="startNewContact">Nouveau contact</button>
-          <button class="ghost-button" type="button" :disabled="!selectedContactId" @click="removeSelected">
+          <button v-if="editorMode === 'edit'" class="ghost-button" type="button" @click="removeSelected">
             Supprimer
           </button>
           <input ref="importInput" class="sr-only" type="file" accept=".json,.csv,application/json,text/csv" @change="handleImportFile" />
