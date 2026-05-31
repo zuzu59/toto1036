@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.3 — 31/05/2026 17:14
+- About affiche le lien auteur et l’email
+- Le refresh est indiqué quand une version plus récente existe
+- Le changelog reste consultable sur GitHub Releases
+
 ## v0.1.2 — 31/05/2026 17:10
 - About affiche le lien auteur et l’email
 - Message de refresh ajouté lors d’une nouvelle version

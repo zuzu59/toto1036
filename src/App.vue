@@ -350,8 +350,8 @@ async function refreshUpdateStatus() {
 
 async function openAboutAndClose() {
   closeHamburgerMenu()
-  await refreshUpdateStatus()
   openAbout()
+  void refreshUpdateStatus()
 }
 
 function openGithubChangelogAndClose() {
