@@ -19,6 +19,7 @@
             <button class="ghost-button" type="button" @click="openImportAndClose('json')">Importer JSON</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('csv')">Importer CSV</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('googlecsv')">Importation Google CSV</button>
+            <button class="ghost-button" type="button" @click="openDirectoryAndClose">Tous les contacts</button>
             <button class="ghost-button" type="button" @click="openGithubChangelogAndClose">Changelog GitHub</button>
             <button class="ghost-button" type="button" @click="openAboutAndClose">
               {{ updateAvailable ? 'About · nouvelle version disponible' : 'About' }}
@@ -65,6 +66,31 @@
     <footer class="app-footer">
       <div class="app-footer__release">Release {{ appRelease }} · {{ appBuildLabel }}</div>
     </footer>
+
+    <section v-if="showDirectory" class="app-about-overlay" role="dialog" aria-modal="true" aria-labelledby="directory-title" @click.self="closeDirectory">
+      <div class="app-about-panel app-directory-panel">
+        <div class="app-changelog-panel__header">
+          <h2 id="directory-title">Tous les contacts</h2>
+          <button class="ghost-button" type="button" @click="closeDirectory">Fermer</button>
+        </div>
+
+        <p class="list-hint">Triés par nom puis prénom. {{ directoryContacts.length }} contact{{ directoryContacts.length > 1 ? 's' : '' }}</p>
+
+        <ContactList
+          :contacts="directoryPageContacts"
+          :selected-id="selectedContactId"
+          :empty-title="'Aucun contact'"
+          :empty-description="'Ajoute des contacts pour remplir la liste.'"
+          @select="openDirectoryContact"
+        />
+
+        <div class="app-directory-pager">
+          <button class="ghost-button" type="button" :disabled="directoryPage <= 1" @click="previousDirectoryPage">Précédent</button>
+          <span>Page {{ directoryPage }} / {{ directoryPageCount }}</span>
+          <button class="ghost-button" type="button" :disabled="directoryPage >= directoryPageCount" @click="nextDirectoryPage">Suivant</button>
+        </div>
+      </div>
+    </section>
 
     <section v-if="showAbout" class="app-about-overlay" role="dialog" aria-modal="true" aria-labelledby="about-title" @click.self="closeAbout">
       <div class="app-about-panel">
@@ -118,7 +144,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import ContactForm from '@/components/ContactForm.vue'
 import ContactList from '@/components/ContactList.vue'
 import SearchBar from '@/components/SearchBar.vue'
-import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, importContacts, importContactsCsv, importGoogleContactsCsv, listFavoriteContacts, searchContacts, updateContact } from '@/services/contacts'
+import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, getContact, importContacts, importContactsCsv, importGoogleContactsCsv, listContactsByName, listFavoriteContacts, searchContacts, updateContact } from '@/services/contacts'
 import type { Contact } from '@/types/contact'
 import { contactToDraft, createEmptyContactDraft, hasMeaningfulValue } from '@/utils/contacts'
 import { isVersionNewer } from '@/utils/releases'
@@ -126,6 +152,10 @@ import { APP_BUILD_TIME, APP_RELEASE } from '@/version'
 
 const contacts = ref<Contact[]>([])
 const query = ref('')
+const showDirectory = ref(false)
+const directoryContacts = ref<Contact[]>([])
+const directoryPage = ref(1)
+const directoryPageSize = 10
 const selectedContactId = ref<number | null>(null)
 const editorMode = ref<'create' | 'edit'>('create')
 const showEditor = ref(false)
@@ -148,6 +178,8 @@ let refreshTimer: number | undefined
 const onlineLabel = computed(() => (online.value ? 'En ligne' : 'Hors ligne'))
 const contactsBadgeLabel = computed(() => (query.value ? `${contacts.value.length} résultats` : `${contacts.value.length} favoris`))
 const listHint = computed(() => (query.value ? 'Les résultats peuvent inclure les contacts non favoris.' : 'Seuls les favoris s’affichent ici. Cherche les autres contacts.'))
+const directoryPageCount = computed(() => Math.max(1, Math.ceil(directoryContacts.value.length / directoryPageSize)))
+const directoryPageContacts = computed(() => directoryContacts.value.slice((directoryPage.value - 1) * directoryPageSize, directoryPage.value * directoryPageSize))
 const appRelease = APP_RELEASE
 const repoUrl = 'https://github.com/zuzu59/z-PWA'
 const releaseUrl = `https://github.com/zuzu59/z-PWA/releases/tag/${appRelease}`
@@ -183,6 +215,17 @@ async function refreshContacts() {
   if (token === refreshToken.value) {
     contacts.value = results
   }
+
+  if (showDirectory.value) {
+    await refreshDirectoryContacts()
+  }
+}
+
+async function refreshDirectoryContacts() {
+  directoryContacts.value = await listContactsByName()
+  if (directoryPage.value > directoryPageCount.value) {
+    directoryPage.value = directoryPageCount.value
+  }
 }
 
 function startNewContact() {
@@ -193,8 +236,8 @@ function startNewContact() {
   duplicateMessage.value = null
 }
 
-function selectContact(id: number) {
-  const contact = contacts.value.find((item) => item.id === id)
+async function selectContact(id: number) {
+  const contact = contacts.value.find((item) => item.id === id) ?? (await getContact(id))
   if (!contact) {
     return
   }
@@ -244,6 +287,9 @@ async function saveContact() {
     draft.value = contactToDraft(saved)
     duplicateMessage.value = null
     await refreshContacts()
+    if (showDirectory.value) {
+      await refreshDirectoryContacts()
+    }
     showNotice('Contact enregistré.')
   } catch (err) {
     showError(err instanceof Error ? err.message : 'Impossible d’enregistrer le contact.')
@@ -270,6 +316,9 @@ async function removeSelected() {
   try {
     await deleteContact(contact.id)
     await refreshContacts()
+    if (showDirectory.value) {
+      await refreshDirectoryContacts()
+    }
     startNewContact()
     showNotice('Contact supprimé.')
   } catch (err) {
@@ -331,6 +380,36 @@ function openAbout() {
 
 function closeAbout() {
   showAbout.value = false
+}
+
+async function openDirectory() {
+  showAbout.value = false
+  showHelp.value = false
+  await refreshDirectoryContacts()
+  directoryPage.value = 1
+  showDirectory.value = true
+}
+
+function closeDirectory() {
+  showDirectory.value = false
+}
+
+async function openDirectoryAndClose() {
+  closeHamburgerMenu()
+  await openDirectory()
+}
+
+function previousDirectoryPage() {
+  directoryPage.value = Math.max(1, directoryPage.value - 1)
+}
+
+function nextDirectoryPage() {
+  directoryPage.value = Math.min(directoryPageCount.value, directoryPage.value + 1)
+}
+
+function openDirectoryContact(id: number) {
+  closeDirectory()
+  void selectContact(id)
 }
 
 async function refreshUpdateStatus() {
@@ -422,6 +501,9 @@ async function handleImportFile(event: Event) {
         ? await importContactsCsv(text)
         : await importContacts(JSON.parse(text) as unknown)
     await refreshContacts()
+    if (showDirectory.value) {
+      await refreshDirectoryContacts()
+    }
     showNotice(`Import terminé : ${result.imported} ajouté(s), ${result.duplicates} doublon(s), ${result.skipped} ignoré(s).`)
   } catch (err) {
     showError(err instanceof Error ? err.message : 'Fichier invalide.')

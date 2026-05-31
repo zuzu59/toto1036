@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.8 — 31/05/2026 18:30
+- Nouveau bouton pour ouvrir tous les contacts
+- Liste paginée par tranche de 10 contacts
+- Tri par nom puis prénom
+
 ## v0.1.7 — 31/05/2026 18:18
 - Ajout de l’importation Google CSV
 - Les champs utiles seulement sont importés

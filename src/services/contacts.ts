@@ -212,6 +212,23 @@ export async function listFavoriteContacts(): Promise<Contact[]> {
   return db.contacts.orderBy('updatedAt').reverse().filter((contact) => contact.favorite && !contact.archived).toArray()
 }
 
+export async function listContactsByName(): Promise<Contact[]> {
+  const contacts = await listContacts()
+  return contacts.slice().sort((a, b) => {
+    const lastNameCompare = a.lastName.localeCompare(b.lastName, 'fr', { sensitivity: 'base' })
+    if (lastNameCompare !== 0) {
+      return lastNameCompare
+    }
+
+    const firstNameCompare = a.firstName.localeCompare(b.firstName, 'fr', { sensitivity: 'base' })
+    if (firstNameCompare !== 0) {
+      return firstNameCompare
+    }
+
+    return a.displayName.localeCompare(b.displayName, 'fr', { sensitivity: 'base' })
+  })
+}
+
 export async function getContact(id: number): Promise<Contact | undefined> {
   return db.contacts.get(id)
 }
