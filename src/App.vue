@@ -18,6 +18,7 @@
             <button class="ghost-button" type="button" @click="exportAndClose('csv')">Exporter CSV</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('json')">Importer JSON</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('csv')">Importer CSV</button>
+            <button class="ghost-button" type="button" @click="openImportAndClose('googlecsv')">Importation Google CSV</button>
             <button class="ghost-button" type="button" @click="openGithubChangelogAndClose">Changelog GitHub</button>
             <button class="ghost-button" type="button" @click="openAboutAndClose">
               {{ updateAvailable ? 'About · nouvelle version disponible' : 'About' }}
@@ -117,7 +118,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import ContactForm from '@/components/ContactForm.vue'
 import ContactList from '@/components/ContactList.vue'
 import SearchBar from '@/components/SearchBar.vue'
-import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, importContacts, importContactsCsv, listFavoriteContacts, searchContacts, updateContact } from '@/services/contacts'
+import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, importContacts, importContactsCsv, importGoogleContactsCsv, listFavoriteContacts, searchContacts, updateContact } from '@/services/contacts'
 import type { Contact } from '@/types/contact'
 import { contactToDraft, createEmptyContactDraft, hasMeaningfulValue } from '@/utils/contacts'
 import { isVersionNewer } from '@/utils/releases'
@@ -134,7 +135,7 @@ const notice = ref('')
 const error = ref('')
 const duplicateMessage = ref<string | null>(null)
 const importInput = ref<HTMLInputElement | null>(null)
-const importMode = ref<'json' | 'csv'>('json')
+const importMode = ref<'json' | 'csv' | 'googlecsv'>('json')
 const hamburgerMenu = ref<HTMLDetailsElement | null>(null)
 const showAbout = ref(false)
 const showHelp = ref(false)
@@ -382,12 +383,12 @@ function openHelpAndClose() {
   openHelp()
 }
 
-function openImportPicker(mode: 'json' | 'csv') {
+function openImportPicker(mode: 'json' | 'csv' | 'googlecsv') {
   importMode.value = mode
   importInput.value?.click()
 }
 
-function openImportAndClose(mode: 'json' | 'csv') {
+function openImportAndClose(mode: 'json' | 'csv' | 'googlecsv') {
   closeHamburgerMenu()
   openImportPicker(mode)
 }
@@ -413,8 +414,13 @@ async function handleImportFile(event: Event) {
 
   try {
     const text = await file.text()
-    const isCsv = importMode.value === 'csv' || file.name.toLowerCase().endsWith('.csv') || file.type === 'text/csv'
-    const result = isCsv ? await importContactsCsv(text) : await importContacts(JSON.parse(text) as unknown)
+    const isGoogleCsv = importMode.value === 'googlecsv'
+    const isCsv = importMode.value === 'csv' || isGoogleCsv || file.name.toLowerCase().endsWith('.csv') || file.type === 'text/csv'
+    const result = isGoogleCsv
+      ? await importGoogleContactsCsv(text)
+      : isCsv
+        ? await importContactsCsv(text)
+        : await importContacts(JSON.parse(text) as unknown)
     await refreshContacts()
     showNotice(`Import terminé : ${result.imported} ajouté(s), ${result.duplicates} doublon(s), ${result.skipped} ignoré(s).`)
   } catch (err) {

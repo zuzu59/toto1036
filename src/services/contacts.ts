@@ -61,19 +61,20 @@ function sniffDelimiter(text: string): string {
   return counts[0]?.[0] ?? ';'
 }
 
-function parseDelimitedRow(line: string, delimiter: string): string[] {
-  const values: string[] =
-    []
-  let current = ''
+function parseDelimitedText(text: string, delimiter: string): string[][] {
+  const input = text.replace(/^\uFEFF/, '')
+  const rows: string[][] = []
+  let row: string[] = []
+  let cell = ''
   let inQuotes = false
 
-  for (let i = 0; i < line.length; i += 1) {
-    const char = line[i]
-    const next = line[i + 1]
+  for (let i = 0; i < input.length; i += 1) {
+    const char = input[i]
+    const next = input[i + 1]
 
     if (char === '"') {
       if (inQuotes && next === '"') {
-        current += '"'
+        cell += '"'
         i += 1
       } else {
         inQuotes = !inQuotes
@@ -82,21 +83,33 @@ function parseDelimitedRow(line: string, delimiter: string): string[] {
     }
 
     if (!inQuotes && char === delimiter) {
-      values.push(current)
-      current = ''
+      row.push(cell)
+      cell = ''
       continue
     }
 
-    current += char
+    if (!inQuotes && (char === '\n' || char === '\r')) {
+      if (char === '\r' && next === '\n') {
+        i += 1
+      }
+      row.push(cell)
+      if (row.some((value) => value.trim().length > 0)) {
+        rows.push(row)
+      }
+      row = []
+      cell = ''
+      continue
+    }
+
+    cell += char
   }
 
-  values.push(current)
-  return values
-}
+  row.push(cell)
+  if (row.some((value) => value.trim().length > 0)) {
+    rows.push(row)
+  }
 
-function parseDelimitedText(text: string, delimiter: string): string[][] {
-  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter((line) => line.trim().length > 0)
-  return lines.map((line) => parseDelimitedRow(line, delimiter))
+  return rows
 }
 
 function truthyCsvValue(value: string): boolean {
@@ -122,6 +135,49 @@ function csvToContactDraft(row: Record<string, string>): ContactDraft {
     notes: row.notes ?? row.note ?? '',
     favorite: truthyCsvValue(row.favorite ?? row.favori ?? ''),
     archived: truthyCsvValue(row.archived ?? row.archive ?? ''),
+  }
+}
+
+function splitGoogleValues(value: string): string[] {
+  return value
+    .split(/\s*:::\s*/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function collectGoogleValues(row: Record<string, string>, keys: string[]): string[] {
+  const values = keys.flatMap((key) => splitGoogleValues(row[key] ?? ''))
+  return [...new Set(values)]
+}
+
+function googleCsvToContactDraft(row: Record<string, string>): ContactDraft {
+  const firstName = row.firstname ?? ''
+  const middleName = row.middlename ?? ''
+  const lastName = row.lastname ?? ''
+  const phoneValues = collectGoogleValues(row, ['phone1value', 'phone2value', 'phone3value'])
+  const emailValues = collectGoogleValues(row, ['email1value', 'email2value', 'email3value'])
+  const labels = normalizeText(row.labels ?? '')
+  const displayName =
+    row.fileas?.trim() || [row.nameprefix, firstName, middleName, lastName, row.namesuffix].filter(Boolean).join(' ').trim()
+
+  return {
+    firstName: [firstName, middleName].filter(Boolean).join(' ').trim(),
+    lastName,
+    displayName,
+    phone: phoneValues[0] ?? '',
+    phone2: phoneValues[1] ?? '',
+    phone3: phoneValues[2] ?? '',
+    email: emailValues[0] ?? '',
+    email2: emailValues[1] ?? '',
+    email3: emailValues[2] ?? '',
+    addressLine1: '',
+    addressLine2: '',
+    postalCode: '',
+    city: '',
+    country: '',
+    notes: row.notes ?? '',
+    favorite: labels.includes('starred'),
+    archived: false,
   }
 }
 
@@ -361,6 +417,63 @@ export async function importContactsCsv(text: string): Promise<ImportResult> {
       !draft.postalCode &&
       !draft.city &&
       !draft.country &&
+      !draft.notes
+    ) {
+      skipped += 1
+      continue
+    }
+
+    const wasImported = await saveImportedContact(draft, existingContacts)
+    if (wasImported) {
+      imported += 1
+    } else {
+      duplicates += 1
+    }
+  }
+
+  return { imported, skipped, duplicates }
+}
+
+export async function importGoogleContactsCsv(text: string): Promise<ImportResult> {
+  if (!text.trim()) {
+    throw new Error('Fichier CSV vide')
+  }
+
+  const delimiter = sniffDelimiter(text)
+  const rows = parseDelimitedText(text, delimiter)
+
+  if (rows.length < 2) {
+    throw new Error('Le fichier Google CSV doit contenir un en-tête et au moins une ligne')
+  }
+
+  const headers = rows[0].map((header) => normalizeHeader(header))
+  const existingContacts = await listContacts()
+  let imported = 0
+  let skipped = 0
+  let duplicates = 0
+
+  for (const row of rows.slice(1)) {
+    if (!row.some((value) => value.trim().length > 0)) {
+      skipped += 1
+      continue
+    }
+
+    const record: Record<string, string> = {}
+    headers.forEach((header, index) => {
+      record[header] = row[index] ?? ''
+    })
+
+    const draft = googleCsvToContactDraft(record)
+    if (
+      !buildDisplayName(draft) &&
+      !draft.firstName &&
+      !draft.lastName &&
+      !draft.phone &&
+      !draft.phone2 &&
+      !draft.phone3 &&
+      !draft.email &&
+      !draft.email2 &&
+      !draft.email3 &&
       !draft.notes
     ) {
       skipped += 1

@@ -22,6 +22,7 @@ Quand une modification est apportée à l’app, il faut :
 - About affiche le nom de l’auteur avec lien GitHub, l’email, la version, et un état de mise à jour en ligne si une release plus récente existe.
 - Quand une mise à jour est disponible, About invite l’utilisateur à faire un refresh (tirer la page vers le bas sur Android).
 - Le bouton “Changelog GitHub” pointe toujours vers la page GitHub Releases (`https://github.com/zuzu59/z-PWA/releases`).
+- L’importation Google CSV existe et ne conserve que les champs utiles.
 - Chaque changement publié doit augmenter la version (`v0.1.0` → `v0.1.1`, etc.).
 
 ## Procédure de mise à jour

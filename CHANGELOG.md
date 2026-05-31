@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.7 — 31/05/2026 18:18
+- Ajout de l’importation Google CSV
+- Les champs utiles seulement sont importés
+- Prise en charge des téléphones/emails multiples
+
 ## v0.1.6 — 31/05/2026 18:05
 - Jusqu’à 3 téléphones et 3 emails par contact
 - Import/export et recherche adaptés aux nouveaux champs
