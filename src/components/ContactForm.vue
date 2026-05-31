@@ -55,7 +55,7 @@
         <button type="submit" class="primary-button" :disabled="busy || !canSave">
           {{ busy ? 'Enregistrement...' : mode === 'edit' ? 'Enregistrer' : 'Créer le contact' }}
         </button>
-        <button type="button" class="ghost-button" @click="$emit('cancel')">Réinitialiser</button>
+        <button type="button" class="ghost-button" @click="$emit('cancel')">Annuler</button>
       </div>
     </form>
   </section>

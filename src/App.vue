@@ -30,8 +30,8 @@
     <main class="dashboard">
       <section class="panel panel--list">
         <div class="panel__actions">
-          <button class="primary-button" type="button" @click="startNewContact">Nouveau contact</button>
-          <button v-if="editorMode === 'edit'" class="ghost-button" type="button" @click="removeSelected">
+          <button v-if="!showEditor" class="primary-button" type="button" @click="startNewContact">Nouveau contact</button>
+          <button v-if="editorMode === 'edit' && showEditor" class="ghost-button" type="button" @click="removeSelected">
             Supprimer
           </button>
           <input ref="importInput" class="sr-only" type="file" accept=".json,.csv,application/json,text/csv" @change="handleImportFile" />
@@ -184,17 +184,11 @@ function selectContact(id: number) {
 }
 
 function resetEditor() {
-  if (editorMode.value === 'edit' && selectedContactId.value !== null) {
-    const contact = contacts.value.find((item) => item.id === selectedContactId.value)
-    if (contact) {
-      draft.value = contactToDraft(contact)
-      duplicateMessage.value = null
-      return
-    }
-  }
-
   showEditor.value = false
-  startNewContact()
+  selectedContactId.value = null
+  editorMode.value = 'create'
+  draft.value = createEmptyContactDraft()
+  duplicateMessage.value = null
 }
 
 async function saveContact() {

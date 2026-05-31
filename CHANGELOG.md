@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.18 — 31/05/2026 15:25
+- Bouton Nouveau contact masqué en édition
+- Bouton Annuler dans le formulaire de modification
+- Vue mobile encore plus épurée
+
 ## v0.0.17 — 31/05/2026 15:23
 - Bouton Supprimer affiché uniquement en édition
 - Vue simplifiée tant qu’aucun contact n’est ouvert
