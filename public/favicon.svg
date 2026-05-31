@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Contacts">
+  <rect width="192" height="192" rx="40" fill="#1d4ed8"/>
+  <circle cx="96" cy="64" r="26" fill="#eff6ff"/>
+  <path d="M48 144c0-26 21-48 48-48s48 22 48 48" fill="#eff6ff"/>
+  <rect x="42" y="30" width="108" height="18" rx="9" fill="#93c5fd" opacity="0.9"/>
+  <rect x="42" y="154" width="72" height="10" rx="5" fill="#bfdbfe" opacity="0.95"/>
+</svg>

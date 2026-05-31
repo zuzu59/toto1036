@@ -1,0 +1,46 @@
+<template>
+  <section class="contact-list">
+    <div class="section-heading">
+      <div>
+        <h2>Contacts</h2>
+        <p>{{ contacts.length }} contact{{ contacts.length > 1 ? 's' : '' }}</p>
+      </div>
+    </div>
+
+    <div v-if="!contacts.length" class="empty-state">
+      <strong>Aucun contact</strong>
+      <p>Crée ton premier contact pour commencer.</p>
+    </div>
+
+    <button
+      v-for="contact in contacts"
+      :key="contact.id"
+      type="button"
+      class="contact-card"
+      :class="{ 'contact-card--selected': contact.id === selectedId }"
+      @click="$emit('select', contact.id)"
+    >
+      <div class="contact-card__main">
+        <strong>{{ contact.displayName || contact.firstName || contact.lastName || 'Sans nom' }}</strong>
+        <span>{{ contact.phone || contact.email || 'Aucun moyen de contact' }}</span>
+      </div>
+      <div class="contact-card__meta">
+        <span v-if="contact.favorite" class="badge badge--gold">Favori</span>
+        <span v-if="contact.archived" class="badge">Archivé</span>
+      </div>
+    </button>
+  </section>
+</template>
+
+<script setup lang="ts">
+import type { Contact } from '@/types/contact'
+
+defineProps<{
+  contacts: Contact[]
+  selectedId: number | null
+}>()
+
+defineEmits<{
+  (e: 'select', id: number): void
+}>()
+</script>
