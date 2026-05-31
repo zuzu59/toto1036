@@ -424,6 +424,10 @@ textarea {
   margin-top: 0.35rem;
 }
 
+.app-about-list a {
+  color: var(--primary);
+}
+
 .app-footer__changelog-group {
   margin-top: 0.85rem;
 }

@@ -88,6 +88,8 @@
           <li>Stack : Vue 3, Vite, TypeScript, Dexie, vite-plugin-pwa</li>
           <li>Stockage local uniquement</li>
           <li>Import/export JSON et CSV</li>
+          <li>Projet : <a href="https://github.com/zuzu59/z-PWA" target="_blank" rel="noreferrer">GitHub</a></li>
+          <li>Release : <a :href="releaseUrl" target="_blank" rel="noreferrer">{{ appRelease }}</a></li>
           <li>Version : {{ appRelease }} · {{ appBuildLabel }}</li>
         </ul>
       </div>
@@ -125,6 +127,7 @@ let refreshTimer: number | undefined
 
 const onlineLabel = computed(() => (online.value ? 'En ligne' : 'Hors ligne'))
 const appRelease = APP_RELEASE
+const releaseUrl = `https://github.com/zuzu59/z-PWA/releases/tag/${appRelease}`
 const appChangelog = APP_CHANGELOG
 const appBuildLabel = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'short',

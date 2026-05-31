@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.12 — 31/05/2026 15:12
+- About enrichi avec les liens GitHub et la release courante
+- Accès plus rapide au dépôt depuis le mobile
+- Raccourcis projet intégrés au panneau About
+
 ## v0.0.11 — 31/05/2026 15:10
 - Ajout d’un panneau About dans le hamburger
 - Infos projet plus accessibles sur mobile
