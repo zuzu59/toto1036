@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.13 — 31/05/2026 15:14
+- Hamburger aligné à droite sur smartphone
+- Menu plus naturel sur petit écran
+- Navigation mobile corrigée
+
 ## v0.0.12 — 31/05/2026 15:12
 - About enrichi avec les liens GitHub et la release courante
 - Accès plus rapide au dépôt depuis le mobile

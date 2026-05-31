@@ -1,7 +1,17 @@
-export const APP_RELEASE = 'v0.0.12'
+export const APP_RELEASE = 'v0.0.13'
 export const APP_BUILD_TIME = __APP_BUILD_TIME__
 
 export const APP_CHANGELOG = [
+  {
+    tag: 'v0.0.13',
+    dateTime: '31/05/2026 15:14',
+    entries: [
+      'Hamburger aligné à droite sur smartphone',
+      'Menu plus naturel sur petit écran',
+      'Navigation mobile corrigée',
+    ],
+    releaseUrl: 'https://github.com/zuzu59/z-PWA/releases/tag/v0.0.13',
+  },
   {
     tag: 'v0.0.12',
     dateTime: '31/05/2026 15:12',

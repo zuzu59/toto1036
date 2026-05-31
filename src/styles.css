@@ -508,8 +508,8 @@ textarea {
   }
 
   .app-hamburger__menu {
-    right: auto;
-    left: 0;
+    right: 0;
+    left: auto;
     width: min(100vw - 2rem, 280px);
   }
 
