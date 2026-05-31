@@ -1,7 +1,17 @@
-export const APP_RELEASE = 'v0.0.21'
+export const APP_RELEASE = 'v0.0.22'
 export const APP_BUILD_TIME = __APP_BUILD_TIME__
 
 export const APP_CHANGELOG = [
+  {
+    tag: 'v0.0.22',
+    dateTime: '31/05/2026 15:36',
+    entries: [
+      'About affiche le différentiel si une mise à jour existe',
+      'Le changelog manuel reste disponible',
+      'Vérification de version plus claire pour le mobile',
+    ],
+    releaseUrl: 'https://github.com/zuzu59/z-PWA/releases/tag/v0.0.22',
+  },
   {
     tag: 'v0.0.21',
     dateTime: '31/05/2026 15:33',

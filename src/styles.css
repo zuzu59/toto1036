@@ -439,6 +439,19 @@ textarea {
   color: var(--primary);
 }
 
+.app-about-update {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border-radius: 18px;
+  background: #eff6ff;
+  border: 1px solid rgba(29, 78, 216, 0.15);
+}
+
+.app-about-update strong {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
 .app-footer__changelog-group {
   margin-top: 0.85rem;
 }

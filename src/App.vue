@@ -18,7 +18,9 @@
             <button class="ghost-button" type="button" @click="openImportAndClose('json')">Importer JSON</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('csv')">Importer CSV</button>
             <button class="ghost-button" type="button" @click="openChangelogAndClose">Voir le changelog</button>
-            <button class="ghost-button" type="button" @click="openAboutAndClose">About</button>
+            <button class="ghost-button" type="button" @click="openAboutAndClose">
+              {{ updateAvailable ? 'About · nouvelle version disponible' : 'About' }}
+            </button>
             <button class="ghost-button" type="button" @click="openHelpAndClose">Help</button>
           </div>
         </details>
@@ -90,6 +92,21 @@
           <li>Release : <a :href="releaseUrl" target="_blank" rel="noreferrer">{{ appRelease }}</a></li>
           <li>Version : {{ appRelease }} · {{ appBuildLabel }}</li>
         </ul>
+
+        <section v-if="updateAvailable" class="app-about-update">
+          <strong>Nouvelle version disponible{{ latestReleaseTag ? ` : ${latestReleaseTag}` : '' }}</strong>
+          <p>Le changelog ci-dessous affiche les différences entre ta version et la dernière release GitHub.</p>
+          <section v-for="group in updateChangelogGroups" :key="group.tag" class="app-footer__changelog-group">
+            <h3>
+              <span>{{ group.tag }}</span>
+              <a v-if="group.releaseUrl" :href="group.releaseUrl" target="_blank" rel="noreferrer">Voir sur GitHub</a>
+            </h3>
+            <p class="app-footer__changelog-date">{{ group.dateTime }}</p>
+            <ul>
+              <li v-for="entry in group.entries" :key="entry">{{ entry }}</li>
+            </ul>
+          </section>
+        </section>
       </div>
     </section>
 
@@ -120,6 +137,7 @@ import SearchBar from '@/components/SearchBar.vue'
 import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, importContacts, importContactsCsv, listContacts, searchContacts, updateContact } from '@/services/contacts'
 import type { Contact } from '@/types/contact'
 import { contactToDraft, createEmptyContactDraft, hasMeaningfulValue } from '@/utils/contacts'
+import { isVersionNewer, parseChangelogMarkdown, type ReleaseChangelogGroup } from '@/utils/releases'
 import { APP_BUILD_TIME, APP_CHANGELOG, APP_RELEASE } from '@/version'
 
 const contacts = ref<Contact[]>([])
@@ -140,6 +158,9 @@ const showAbout = ref(false)
 const showHelp = ref(false)
 const online = ref(navigator.onLine)
 const refreshToken = ref(0)
+const updateAvailable = ref(false)
+const latestReleaseTag = ref<string | null>(null)
+const updateChangelogGroups = ref<ReleaseChangelogGroup[]>([])
 let refreshTimer: number | undefined
 
 const onlineLabel = computed(() => (online.value ? 'En ligne' : 'Hors ligne'))
@@ -343,60 +364,40 @@ function closeAbout() {
   showAbout.value = false
 }
 
-function parseVersionTag(tag: string): number[] {
-  return tag
-    .replace(/^v/i, '')
-    .split('.')
-    .map((part) => Number.parseInt(part, 10) || 0)
-}
+async function refreshUpdateStatus() {
+  try {
+    const response = await fetch('https://api.github.com/repos/zuzu59/z-PWA/releases/latest', {
+      headers: {
+        Accept: 'application/vnd.github+json',
+      },
+    })
 
-function isVersionNewer(remoteTag: string, currentTag: string): boolean {
-  const remote = parseVersionTag(remoteTag)
-  const current = parseVersionTag(currentTag)
-  const length = Math.max(remote.length, current.length)
-
-  for (let index = 0; index < length; index += 1) {
-    const remotePart = remote[index] ?? 0
-    const currentPart = current[index] ?? 0
-    if (remotePart > currentPart) {
-      return true
+    if (!response.ok) {
+      updateAvailable.value = false
+      latestReleaseTag.value = null
+      updateChangelogGroups.value = []
+      return
     }
-    if (remotePart < currentPart) {
-      return false
-    }
+
+    const payload = (await response.json()) as { tag_name?: unknown; body?: unknown }
+    const latestTag = typeof payload.tag_name === 'string' ? payload.tag_name : null
+    const latestBody = typeof payload.body === 'string' ? payload.body : ''
+
+    latestReleaseTag.value = latestTag
+    updateAvailable.value = Boolean(latestTag && isVersionNewer(latestTag, appRelease))
+    updateChangelogGroups.value = updateAvailable.value
+      ? parseChangelogMarkdown(latestBody).filter((group) => isVersionNewer(group.tag, appRelease))
+      : []
+  } catch {
+    updateAvailable.value = false
+    latestReleaseTag.value = null
+    updateChangelogGroups.value = []
   }
-
-  return false
-}
-
-async function getLatestGithubReleaseTag(): Promise<string | null> {
-  const response = await fetch('https://api.github.com/repos/zuzu59/z-PWA/releases/latest', {
-    headers: {
-      Accept: 'application/vnd.github+json',
-    },
-  })
-
-  if (!response.ok) {
-    return null
-  }
-
-  const payload = (await response.json()) as { tag_name?: unknown }
-  return typeof payload.tag_name === 'string' ? payload.tag_name : null
 }
 
 async function openAboutAndClose() {
   closeHamburgerMenu()
-
-  try {
-    const latestTag = await getLatestGithubReleaseTag()
-    if (latestTag && isVersionNewer(latestTag, appRelease)) {
-      openChangelog()
-      return
-    }
-  } catch {
-    // ignore network/API issues and show About normally
-  }
-
+  await refreshUpdateStatus()
   openAbout()
 }
 
@@ -457,6 +458,7 @@ async function handleImportFile(event: Event) {
 
 const handleOnline = () => {
   online.value = true
+  void refreshUpdateStatus()
 }
 
 const handleOffline = () => {
@@ -472,6 +474,7 @@ watch(query, () => {
 
 onMounted(async () => {
   await refreshContacts()
+  void refreshUpdateStatus()
   window.addEventListener('online', handleOnline)
   window.addEventListener('offline', handleOffline)
   document.addEventListener('pointerdown', handleDocumentPointerDown)

@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.22 — 31/05/2026 15:36
+- About affiche le différentiel si une mise à jour existe
+- Le changelog manuel reste disponible
+- Vérification de version plus claire pour le mobile
+
 ## v0.0.21 — 31/05/2026 15:33
 - Ajout d’un menu Help dans le hamburger
 - Instructions de fonctionnement et d’installation smartphone
