@@ -19,6 +19,7 @@ Petit POC de carnet de contacts offline-first, installable comme PWA.
 - export / import JSON
 - export / import CSV
 - fonctionnement hors ligne
+- lien vers les releases GitHub depuis l’app
 
 ## Lancer le projet
 

@@ -334,6 +334,21 @@ textarea {
   margin: 0;
   font-size: 0.92rem;
   color: var(--primary);
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.app-footer__changelog-group h3 a {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.app-footer__changelog-group h3 a:hover {
+  text-decoration: underline;
 }
 
 .app-footer__changelog-group ul {

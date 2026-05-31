@@ -50,7 +50,10 @@
       <details class="app-footer__changelog">
         <summary>Changelog</summary>
         <section v-for="group in appChangelog" :key="group.dateTime" class="app-footer__changelog-group">
-          <h3>{{ group.dateTime }}</h3>
+          <h3>
+            {{ group.dateTime }}
+            <a v-if="group.releaseUrl" :href="group.releaseUrl" target="_blank" rel="noreferrer">Voir sur GitHub</a>
+          </h3>
           <ul>
             <li v-for="entry in group.entries" :key="entry">{{ entry }}</li>
           </ul>
