@@ -49,9 +49,12 @@
       <div class="app-footer__release">Release {{ appRelease }} · {{ appBuildLabel }}</div>
       <details class="app-footer__changelog">
         <summary>Changelog</summary>
-        <ul>
-          <li v-for="entry in appChangelog" :key="entry">{{ entry }}</li>
-        </ul>
+        <section v-for="group in appChangelog" :key="group.dateTime" class="app-footer__changelog-group">
+          <h3>{{ group.dateTime }}</h3>
+          <ul>
+            <li v-for="entry in group.entries" :key="entry">{{ entry }}</li>
+          </ul>
+        </section>
       </details>
     </footer>
   </div>
