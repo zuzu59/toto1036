@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.11 — 31/05/2026 18:32
+- L’import Google CSV ne coche plus Favori sur les nouveaux contacts
+- Les contacts existants conservent leur état
+- Import Google plus neutre
+
 ## v0.1.10 — 31/05/2026 18:28
 - Import Google CSV enrichit les contacts existants
 - Les champs manquants seulement sont complétés

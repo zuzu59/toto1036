@@ -156,7 +156,6 @@ function googleCsvToContactDraft(row: Record<string, string>): ContactDraft {
   const lastName = row.lastname ?? ''
   const phoneValues = collectGoogleValues(row, ['phone1value', 'phone2value', 'phone3value'])
   const emailValues = collectGoogleValues(row, ['email1value', 'email2value', 'email3value'])
-  const labels = normalizeText(row.labels ?? '')
   const displayName =
     row.fileas?.trim() || [row.nameprefix, firstName, middleName, lastName, row.namesuffix].filter(Boolean).join(' ').trim()
 
@@ -176,7 +175,7 @@ function googleCsvToContactDraft(row: Record<string, string>): ContactDraft {
     city: '',
     country: '',
     notes: row.notes ?? '',
-    favorite: labels.includes('starred'),
+    favorite: false,
     archived: false,
   }
 }
