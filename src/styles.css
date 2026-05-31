@@ -351,6 +351,11 @@ textarea {
   color: #0f172a;
 }
 
+.danger-button {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 .alert {
   border-radius: 18px;
   padding: 0.9rem 1rem;

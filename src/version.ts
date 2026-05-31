@@ -1,7 +1,17 @@
-export const APP_RELEASE = 'v0.0.18'
+export const APP_RELEASE = 'v0.0.19'
 export const APP_BUILD_TIME = __APP_BUILD_TIME__
 
 export const APP_CHANGELOG = [
+  {
+    tag: 'v0.0.19',
+    dateTime: '31/05/2026 15:28',
+    entries: [
+      'Bouton Supprimer déplacé dans le formulaire',
+      'Confirmation conservée avant suppression',
+      'Boutons du formulaire mieux disposés',
+    ],
+    releaseUrl: 'https://github.com/zuzu59/z-PWA/releases/tag/v0.0.19',
+  },
   {
     tag: 'v0.0.18',
     dateTime: '31/05/2026 15:25',

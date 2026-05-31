@@ -31,9 +31,6 @@
       <section class="panel panel--list">
         <div class="panel__actions">
           <button v-if="!showEditor" class="primary-button" type="button" @click="startNewContact">Nouveau contact</button>
-          <button v-if="editorMode === 'edit' && showEditor" class="ghost-button" type="button" @click="removeSelected">
-            Supprimer
-          </button>
           <input ref="importInput" class="sr-only" type="file" accept=".json,.csv,application/json,text/csv" @change="handleImportFile" />
         </div>
 
@@ -49,6 +46,7 @@
           :duplicate-message="duplicateMessage"
           @submit="saveContact"
           @cancel="resetEditor"
+          @delete="removeSelected"
         />
       </section>
     </main>

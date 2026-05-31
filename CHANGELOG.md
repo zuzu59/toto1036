@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.19 — 31/05/2026 15:28
+- Bouton Supprimer déplacé dans le formulaire
+- Confirmation conservée avant suppression
+- Boutons du formulaire mieux disposés
+
 ## v0.0.18 — 31/05/2026 15:25
 - Bouton Nouveau contact masqué en édition
 - Bouton Annuler dans le formulaire de modification

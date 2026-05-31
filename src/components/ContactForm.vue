@@ -56,6 +56,7 @@
           {{ busy ? 'Enregistrement...' : mode === 'edit' ? 'Enregistrer' : 'Créer le contact' }}
         </button>
         <button type="button" class="ghost-button" @click="$emit('cancel')">Annuler</button>
+        <button v-if="mode === 'edit'" type="button" class="danger-button" @click="$emit('delete')">Supprimer</button>
       </div>
     </form>
   </section>
@@ -79,6 +80,7 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: ContactDraft): void
   (e: 'submit'): void
   (e: 'cancel'): void
+  (e: 'delete'): void
 }>()
 
 const canSave = computed(() => hasMeaningfulValue(props.modelValue))
