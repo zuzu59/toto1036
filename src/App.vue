@@ -6,9 +6,21 @@
         <h1>z-PWA Contacts</h1>
         <p class="lead">Carnet de contacts installable, rapide et utilisable sans réseau.</p>
       </div>
-      <div class="app-header__stats">
-        <span class="badge">{{ onlineLabel }}</span>
-        <span class="badge">{{ contacts.length }} visibles</span>
+      <div class="app-header__actions">
+        <div class="app-header__stats">
+          <span class="badge">{{ onlineLabel }}</span>
+          <span class="badge">{{ contacts.length }} visibles</span>
+        </div>
+        <details ref="hamburgerMenu" class="app-hamburger">
+          <summary aria-label="Ouvrir le menu">☰</summary>
+          <div class="app-hamburger__menu">
+            <button class="ghost-button" type="button" @click="exportAndClose('json')">Exporter JSON</button>
+            <button class="ghost-button" type="button" @click="exportAndClose('csv')">Exporter CSV</button>
+            <button class="ghost-button" type="button" @click="openImportAndClose('json')">Importer JSON</button>
+            <button class="ghost-button" type="button" @click="openImportAndClose('csv')">Importer CSV</button>
+            <a class="ghost-link" href="#changelog-panel" @click="closeHamburgerMenu">Voir le changelog</a>
+          </div>
+        </details>
       </div>
     </header>
 
@@ -19,10 +31,6 @@
       <section class="panel panel--list">
         <div class="panel__actions">
           <button class="primary-button" type="button" @click="startNewContact">Nouveau contact</button>
-          <button class="ghost-button" type="button" @click="exportAll">Exporter JSON</button>
-          <button class="ghost-button" type="button" @click="exportAllCsv">Exporter CSV</button>
-          <button class="ghost-button" type="button" @click="openImportPicker('json')">Importer JSON</button>
-          <button class="ghost-button" type="button" @click="openImportPicker('csv')">Importer CSV</button>
           <button class="ghost-button" type="button" :disabled="!selectedContactId" @click="removeSelected">
             Supprimer
           </button>
@@ -47,7 +55,7 @@
 
     <footer class="app-footer">
       <div class="app-footer__release">Release {{ appRelease }} · {{ appBuildLabel }}</div>
-      <details class="app-footer__changelog">
+      <details id="changelog-panel" class="app-footer__changelog">
         <summary>Changelog</summary>
         <section v-for="group in appChangelog" :key="group.tag" class="app-footer__changelog-group">
           <h3>
@@ -85,6 +93,7 @@ const error = ref('')
 const duplicateMessage = ref<string | null>(null)
 const importInput = ref<HTMLInputElement | null>(null)
 const importMode = ref<'json' | 'csv'>('json')
+const hamburgerMenu = ref<HTMLDetailsElement | null>(null)
 const online = ref(navigator.onLine)
 const refreshToken = ref(0)
 let refreshTimer: number | undefined
@@ -252,9 +261,28 @@ async function exportAllCsv() {
   }
 }
 
+function closeHamburgerMenu() {
+  hamburgerMenu.value?.removeAttribute('open')
+}
+
 function openImportPicker(mode: 'json' | 'csv') {
   importMode.value = mode
   importInput.value?.click()
+}
+
+function openImportAndClose(mode: 'json' | 'csv') {
+  closeHamburgerMenu()
+  openImportPicker(mode)
+}
+
+async function exportAndClose(mode: 'json' | 'csv') {
+  closeHamburgerMenu()
+  if (mode === 'json') {
+    await exportAll()
+    return
+  }
+
+  await exportAllCsv()
 }
 
 async function handleImportFile(event: Event) {

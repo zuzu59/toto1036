@@ -1,7 +1,17 @@
-export const APP_RELEASE = 'v0.0.7'
+export const APP_RELEASE = 'v0.0.8'
 export const APP_BUILD_TIME = __APP_BUILD_TIME__
 
 export const APP_CHANGELOG = [
+  {
+    tag: 'v0.0.8',
+    dateTime: '31/05/2026 15:03',
+    entries: [
+      'Actions secondaires déplacées dans un hamburger',
+      'Interface plus lisible sur petit écran',
+      'Menu secondaire fermé après action',
+    ],
+    releaseUrl: 'https://github.com/zuzu59/z-PWA/releases/tag/v0.0.8',
+  },
   {
     tag: 'v0.0.7',
     dateTime: '31/05/2026 14:58',

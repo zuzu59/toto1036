@@ -131,6 +131,74 @@ textarea {
   flex-wrap: wrap;
 }
 
+.app-header__actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.app-hamburger {
+  position: relative;
+}
+
+.app-hamburger > summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  background: #e2e8f0;
+  color: #0f172a;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.app-hamburger > summary::-webkit-details-marker {
+  display: none;
+}
+
+.app-hamburger[open] > summary {
+  background: #cbd5e1;
+}
+
+.app-hamburger__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.65rem);
+  display: grid;
+  gap: 0.5rem;
+  min-width: 220px;
+  padding: 0.75rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+  z-index: 10;
+}
+
+.ghost-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: #e2e8f0;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.ghost-link:hover {
+  transform: translateY(-1px);
+}
+
+.ghost-link:focus-visible,
+.app-hamburger > summary:focus-visible {
+  outline: 3px solid rgba(29, 78, 216, 0.18);
+  border-radius: 14px;
+}
+
 .dashboard {
   display: grid;
   gap: 1rem;
@@ -397,6 +465,18 @@ textarea {
 
   .app-header {
     flex-direction: column;
+  }
+
+  .app-header__actions {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .app-hamburger__menu {
+    right: auto;
+    left: 0;
+    width: min(100vw - 2rem, 280px);
   }
 
   .search-bar__field,

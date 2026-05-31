@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.8 — 31/05/2026 15:03
+- Actions secondaires déplacées dans un hamburger
+- Interface plus lisible sur petit écran
+- Menu secondaire fermé après action
+
 ## v0.0.7 — 31/05/2026 14:58
 - Le changelog affiche maintenant le tag puis la date/heure
 - Lien direct vers les releases GitHub
