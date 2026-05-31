@@ -19,6 +19,7 @@
             <button class="ghost-button" type="button" @click="openImportAndClose('csv')">Importer CSV</button>
             <button class="ghost-button" type="button" @click="openChangelogAndClose">Voir le changelog</button>
             <button class="ghost-button" type="button" @click="openAboutAndClose">About</button>
+            <button class="ghost-button" type="button" @click="openHelpAndClose">Help</button>
           </div>
         </details>
       </div>
@@ -91,6 +92,23 @@
         </ul>
       </div>
     </section>
+
+    <section v-if="showHelp" class="app-about-overlay" role="dialog" aria-modal="true" aria-labelledby="help-title" @click.self="closeHelp">
+      <div class="app-about-panel">
+        <div class="app-changelog-panel__header">
+          <h2 id="help-title">Help</h2>
+          <button class="ghost-button" type="button" @click="closeHelp">Fermer</button>
+        </div>
+        <p><strong>Comment utiliser l’app</strong></p>
+        <ul class="app-about-list">
+          <li>Les contacts sont enregistrés en local sur le smartphone.</li>
+          <li>La recherche fonctionne hors ligne.</li>
+          <li>Le formulaire s’ouvre avec “Nouveau contact” ou en sélectionnant un contact.</li>
+          <li>Pour installer l’app : ouvre le menu du navigateur puis choisis “Installer” ou “Ajouter à l’écran d’accueil”.</li>
+          <li>Sur iPhone : bouton Partager → “Sur l’écran d’accueil”.</li>
+        </ul>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -119,6 +137,7 @@ const importMode = ref<'json' | 'csv'>('json')
 const hamburgerMenu = ref<HTMLDetailsElement | null>(null)
 const showChangelog = ref(false)
 const showAbout = ref(false)
+const showHelp = ref(false)
 const online = ref(navigator.onLine)
 const refreshToken = ref(0)
 let refreshTimer: number | undefined
@@ -301,6 +320,7 @@ function handleDocumentPointerDown(event: PointerEvent) {
 
 function openChangelog() {
   showAbout.value = false
+  showHelp.value = false
   showChangelog.value = true
 }
 
@@ -315,6 +335,7 @@ function openChangelogAndClose() {
 
 function openAbout() {
   showChangelog.value = false
+  showHelp.value = false
   showAbout.value = true
 }
 
@@ -377,6 +398,21 @@ async function openAboutAndClose() {
   }
 
   openAbout()
+}
+
+function openHelp() {
+  showAbout.value = false
+  showChangelog.value = false
+  showHelp.value = true
+}
+
+function closeHelp() {
+  showHelp.value = false
+}
+
+function openHelpAndClose() {
+  closeHamburgerMenu()
+  openHelp()
 }
 
 function openImportPicker(mode: 'json' | 'csv') {

@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.21 — 31/05/2026 15:33
+- Ajout d’un menu Help dans le hamburger
+- Instructions de fonctionnement et d’installation smartphone
+- Aide accessible depuis l’application
+
 ## v0.0.20 — 31/05/2026 15:30
 - About vérifie la dernière release GitHub
 - Changelog affiché automatiquement si une version plus récente existe

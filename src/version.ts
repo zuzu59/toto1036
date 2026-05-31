@@ -1,7 +1,17 @@
-export const APP_RELEASE = 'v0.0.20'
+export const APP_RELEASE = 'v0.0.21'
 export const APP_BUILD_TIME = __APP_BUILD_TIME__
 
 export const APP_CHANGELOG = [
+  {
+    tag: 'v0.0.21',
+    dateTime: '31/05/2026 15:33',
+    entries: [
+      'Ajout d’un menu Help dans le hamburger',
+      'Instructions de fonctionnement et d’installation smartphone',
+      'Aide accessible depuis l’application',
+    ],
+    releaseUrl: 'https://github.com/zuzu59/z-PWA/releases/tag/v0.0.21',
+  },
   {
     tag: 'v0.0.20',
     dateTime: '31/05/2026 15:30',
