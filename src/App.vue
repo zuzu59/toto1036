@@ -272,6 +272,17 @@ function closeHamburgerMenu() {
   hamburgerMenu.value?.removeAttribute('open')
 }
 
+function handleDocumentPointerDown(event: PointerEvent) {
+  const target = event.target as Node | null
+  if (!target || !hamburgerMenu.value) {
+    return
+  }
+
+  if (!hamburgerMenu.value.contains(target)) {
+    closeHamburgerMenu()
+  }
+}
+
 function openChangelog() {
   showChangelog.value = true
 }
@@ -344,11 +355,13 @@ onMounted(async () => {
   await refreshContacts()
   window.addEventListener('online', handleOnline)
   window.addEventListener('offline', handleOffline)
+  document.addEventListener('pointerdown', handleDocumentPointerDown)
 })
 
 onUnmounted(() => {
   window.clearTimeout(refreshTimer)
   window.removeEventListener('online', handleOnline)
   window.removeEventListener('offline', handleOffline)
+  document.removeEventListener('pointerdown', handleDocumentPointerDown)
 })
 </script>

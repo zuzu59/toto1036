@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.10 — 31/05/2026 15:07
+- Le hamburger se referme quand on clique en dehors
+- Menu mobile plus naturel à quitter
+- Navigation secondaire plus fluide sur smartphone
+
 ## v0.0.9 — 31/05/2026 15:05
 - Changelog accessible depuis le hamburger
 - Affichage en modal pour mieux tenir sur mobile
