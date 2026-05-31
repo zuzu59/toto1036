@@ -44,6 +44,7 @@ export interface ContactDraft {
 
 export interface ImportResult {
   imported: number
+  merged: number
   skipped: number
   duplicates: number
 }

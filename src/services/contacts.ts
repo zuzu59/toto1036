@@ -181,12 +181,60 @@ function googleCsvToContactDraft(row: Record<string, string>): ContactDraft {
   }
 }
 
-async function saveImportedContact(draft: ContactDraft, existingContacts: Contact[]): Promise<boolean> {
+function isBlank(value: string): boolean {
+  return !value.trim()
+}
+
+function mergeMissingContactFields(existing: Contact, incoming: ContactDraft): ContactDraft {
+  const mergedPhones = [existing.phone, existing.phone2, existing.phone3]
+  const incomingPhones = [incoming.phone, incoming.phone2, incoming.phone3].filter((value) => !isBlank(value))
+  incomingPhones.forEach((value) => {
+    if (!mergedPhones.includes(value) && mergedPhones.some(isBlank)) {
+      const index = mergedPhones.findIndex(isBlank)
+      if (index !== -1) {
+        mergedPhones[index] = value
+      }
+    }
+  })
+
+  const mergedEmails = [existing.email, existing.email2, existing.email3]
+  const incomingEmails = [incoming.email, incoming.email2, incoming.email3].filter((value) => !isBlank(value))
+  incomingEmails.forEach((value) => {
+    if (!mergedEmails.includes(value) && mergedEmails.some(isBlank)) {
+      const index = mergedEmails.findIndex(isBlank)
+      if (index !== -1) {
+        mergedEmails[index] = value
+      }
+    }
+  })
+
+  return {
+    firstName: existing.firstName || incoming.firstName,
+    lastName: existing.lastName || incoming.lastName,
+    displayName: existing.displayName || incoming.displayName || buildDisplayName(incoming),
+    phone: mergedPhones[0] ?? '',
+    phone2: mergedPhones[1] ?? '',
+    phone3: mergedPhones[2] ?? '',
+    email: mergedEmails[0] ?? '',
+    email2: mergedEmails[1] ?? '',
+    email3: mergedEmails[2] ?? '',
+    addressLine1: existing.addressLine1 || incoming.addressLine1,
+    addressLine2: existing.addressLine2 || incoming.addressLine2,
+    postalCode: existing.postalCode || incoming.postalCode,
+    city: existing.city || incoming.city,
+    country: existing.country || incoming.country,
+    notes: existing.notes || incoming.notes,
+    favorite: existing.favorite,
+    archived: existing.archived,
+  }
+}
+
+function findMatchingExistingContact(draft: ContactDraft, existingContacts: Contact[]): Contact | undefined {
   const normalizedName = normalizeText(buildDisplayName(draft))
   const normalizedPhones = [draft.phone, draft.phone2, draft.phone3].map(normalizePhone).filter(Boolean)
   const normalizedEmails = [draft.email, draft.email2, draft.email3].map(normalizeEmail).filter(Boolean)
 
-  const duplicate = existingContacts.some((contact) => {
+  return existingContacts.find((contact) => {
     const contactPhones = [contact.phone, contact.phone2, contact.phone3].map(normalizePhone).filter(Boolean)
     const contactEmails = [contact.email, contact.email2, contact.email3].map(normalizeEmail).filter(Boolean)
     const samePhone = normalizedPhones.some((value) => contactPhones.includes(value))
@@ -194,6 +242,10 @@ async function saveImportedContact(draft: ContactDraft, existingContacts: Contac
     const sameName = normalizedName && normalizeText(contact.displayName) === normalizedName
     return samePhone || sameEmail || (sameName && !normalizedPhones.length && !normalizedEmails.length)
   })
+}
+
+async function saveImportedContact(draft: ContactDraft, existingContacts: Contact[]): Promise<boolean> {
+  const duplicate = findMatchingExistingContact(draft, existingContacts)
 
   if (duplicate) {
     return false
@@ -202,6 +254,23 @@ async function saveImportedContact(draft: ContactDraft, existingContacts: Contac
   const saved = await createContact(draft)
   existingContacts.push(saved)
   return true
+}
+
+async function saveOrMergeGoogleContact(draft: ContactDraft, existingContacts: Contact[]): Promise<'imported' | 'merged' | 'skipped'> {
+  const match = findMatchingExistingContact(draft, existingContacts)
+  if (!match) {
+    const saved = await createContact(draft)
+    existingContacts.push(saved)
+    return 'imported'
+  }
+
+  const mergedDraft = mergeMissingContactFields(match, draft)
+  const updated = await updateContact(match.id, mergedDraft)
+  const index = existingContacts.findIndex((contact) => contact.id === match.id)
+  if (index !== -1) {
+    existingContacts[index] = updated
+  }
+  return 'merged'
 }
 
 export async function listContacts(): Promise<Contact[]> {
@@ -348,6 +417,7 @@ export async function importContacts(payload: unknown): Promise<ImportResult> {
 
   const existingContacts = await listContacts()
   let imported = 0
+  let merged = 0
   let skipped = 0
   let duplicates = 0
 
@@ -386,7 +456,7 @@ export async function importContacts(payload: unknown): Promise<ImportResult> {
     }
   }
 
-  return { imported, skipped, duplicates }
+  return { imported, merged, skipped, duplicates }
 }
 
 export async function importContactsCsv(text: string): Promise<ImportResult> {
@@ -404,6 +474,7 @@ export async function importContactsCsv(text: string): Promise<ImportResult> {
   const headers = rows[0].map((header) => normalizeHeader(header))
   const existingContacts = await listContacts()
   let imported = 0
+  let merged = 0
   let skipped = 0
   let duplicates = 0
 
@@ -448,7 +519,7 @@ export async function importContactsCsv(text: string): Promise<ImportResult> {
     }
   }
 
-  return { imported, skipped, duplicates }
+  return { imported, merged, skipped, duplicates }
 }
 
 export async function importGoogleContactsCsv(text: string): Promise<ImportResult> {
@@ -466,6 +537,7 @@ export async function importGoogleContactsCsv(text: string): Promise<ImportResul
   const headers = rows[0].map((header) => normalizeHeader(header))
   const existingContacts = await listContacts()
   let imported = 0
+  let merged = 0
   let skipped = 0
   let duplicates = 0
 
@@ -497,13 +569,15 @@ export async function importGoogleContactsCsv(text: string): Promise<ImportResul
       continue
     }
 
-    const wasImported = await saveImportedContact(draft, existingContacts)
-    if (wasImported) {
+    const outcome = await saveOrMergeGoogleContact(draft, existingContacts)
+    if (outcome === 'imported') {
       imported += 1
+    } else if (outcome === 'merged') {
+      merged += 1
     } else {
       duplicates += 1
     }
   }
 
-  return { imported, skipped, duplicates }
+  return { imported, merged, skipped, duplicates }
 }

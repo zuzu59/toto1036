@@ -504,7 +504,7 @@ async function handleImportFile(event: Event) {
     if (showDirectory.value) {
       await refreshDirectoryContacts()
     }
-    showNotice(`Import terminé : ${result.imported} ajouté(s), ${result.duplicates} doublon(s), ${result.skipped} ignoré(s).`)
+    showNotice(`Import terminé : ${result.imported} ajouté(s), ${result.merged} mis à jour, ${result.duplicates} doublon(s), ${result.skipped} ignoré(s).`)
   } catch (err) {
     showError(err instanceof Error ? err.message : 'Fichier invalide.')
   }

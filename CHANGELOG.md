@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.10 — 31/05/2026 18:28
+- Import Google CSV enrichit les contacts existants
+- Les champs manquants seulement sont complétés
+- Les doublons ne sont plus ignorés pour Google CSV
+
+## v0.1.9 — 31/05/2026 18:20
+- Petit ajustement sur l’import Google CSV
+- Résumé d’import plus clair
+- Gestion des mises à jour de contacts plus souple
+
 ## v0.1.8 — 31/05/2026 18:30
 - Nouveau bouton pour ouvrir tous les contacts
 - Liste paginée par tranche de 10 contacts
