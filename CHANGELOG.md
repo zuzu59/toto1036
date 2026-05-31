@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.9 — 31/05/2026 15:05
+- Changelog accessible depuis le hamburger
+- Affichage en modal pour mieux tenir sur mobile
+- Actions secondaires toujours conservées dans le menu
+
 ## v0.0.8 — 31/05/2026 15:03
 - Actions secondaires déplacées dans un hamburger
 - Interface plus lisible sur petit écran
@@ -15,13 +20,13 @@
 - Changelog disponible aussi sur GitHub Releases
 - Ajout de l’import/export CSV
 
-## 31/05/2026 15:18
+## v0.0.5 — 31/05/2026 15:18
 - Ajout d’un changelog dans l’app
 - Version affichée avec date/heure de build
 - Amélioration de la stabilité de la recherche
 
-## 31/05/2026 14:55
+## v0.0.4 — 31/05/2026 14:55
 - Passage à une version visible dans l’app
 
-## 31/05/2026 14:30
+## v0.0.3 — 31/05/2026 14:30
 - Première version PWA du carnet de contacts

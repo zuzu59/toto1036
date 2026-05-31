@@ -18,7 +18,7 @@
             <button class="ghost-button" type="button" @click="exportAndClose('csv')">Exporter CSV</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('json')">Importer JSON</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('csv')">Importer CSV</button>
-            <a class="ghost-link" href="#changelog-panel" @click="closeHamburgerMenu">Voir le changelog</a>
+            <button class="ghost-button" type="button" @click="openChangelogAndClose">Voir le changelog</button>
           </div>
         </details>
       </div>
@@ -55,8 +55,14 @@
 
     <footer class="app-footer">
       <div class="app-footer__release">Release {{ appRelease }} · {{ appBuildLabel }}</div>
-      <details id="changelog-panel" class="app-footer__changelog">
-        <summary>Changelog</summary>
+    </footer>
+
+    <section v-if="showChangelog" class="app-changelog-overlay" role="dialog" aria-modal="true" aria-labelledby="changelog-title" @click.self="closeChangelog">
+      <div class="app-changelog-panel">
+        <div class="app-changelog-panel__header">
+          <h2 id="changelog-title">Changelog</h2>
+          <button class="ghost-button" type="button" @click="closeChangelog">Fermer</button>
+        </div>
         <section v-for="group in appChangelog" :key="group.tag" class="app-footer__changelog-group">
           <h3>
             <span>{{ group.tag }}</span>
@@ -67,8 +73,8 @@
             <li v-for="entry in group.entries" :key="entry">{{ entry }}</li>
           </ul>
         </section>
-      </details>
-    </footer>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -94,6 +100,7 @@ const duplicateMessage = ref<string | null>(null)
 const importInput = ref<HTMLInputElement | null>(null)
 const importMode = ref<'json' | 'csv'>('json')
 const hamburgerMenu = ref<HTMLDetailsElement | null>(null)
+const showChangelog = ref(false)
 const online = ref(navigator.onLine)
 const refreshToken = ref(0)
 let refreshTimer: number | undefined
@@ -263,6 +270,19 @@ async function exportAllCsv() {
 
 function closeHamburgerMenu() {
   hamburgerMenu.value?.removeAttribute('open')
+}
+
+function openChangelog() {
+  showChangelog.value = true
+}
+
+function closeChangelog() {
+  showChangelog.value = false
+}
+
+function openChangelogAndClose() {
+  closeHamburgerMenu()
+  openChangelog()
 }
 
 function openImportPicker(mode: 'json' | 'csv') {
