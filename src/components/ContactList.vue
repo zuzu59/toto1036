@@ -8,8 +8,8 @@
     </div>
 
     <div v-if="!contacts.length" class="empty-state">
-      <strong>Aucun contact</strong>
-      <p>Crée ton premier contact pour commencer.</p>
+      <strong>{{ emptyTitle }}</strong>
+      <p>{{ emptyDescription }}</p>
     </div>
 
     <button
@@ -35,10 +35,18 @@
 <script setup lang="ts">
 import type { Contact } from '@/types/contact'
 
-defineProps<{
-  contacts: Contact[]
-  selectedId: number | null
-}>()
+withDefaults(
+  defineProps<{
+    contacts: Contact[]
+    selectedId: number | null
+    emptyTitle?: string
+    emptyDescription?: string
+  }>(),
+  {
+    emptyTitle: 'Aucun contact',
+    emptyDescription: 'Crée ton premier contact pour commencer.',
+  },
+)
 
 defineEmits<{
   (e: 'select', id: number): void

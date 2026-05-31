@@ -243,6 +243,12 @@ textarea {
   gap: 0.45rem;
 }
 
+.list-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
 .search-bar__label {
   font-size: 0.95rem;
 }

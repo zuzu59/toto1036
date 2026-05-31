@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.4 — 31/05/2026 17:20
+- La liste affiche seulement les favoris par défaut
+- Les autres contacts restent accessibles via la recherche
+- Indication plus claire dans l’interface
+
 ## v0.1.3 — 31/05/2026 17:14
 - About affiche le lien auteur et l’email
 - Le refresh est indiqué quand une version plus récente existe

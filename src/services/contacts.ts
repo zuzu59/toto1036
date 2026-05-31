@@ -132,6 +132,10 @@ export async function listContacts(): Promise<Contact[]> {
   return db.contacts.orderBy('updatedAt').reverse().toArray()
 }
 
+export async function listFavoriteContacts(): Promise<Contact[]> {
+  return db.contacts.orderBy('updatedAt').reverse().filter((contact) => contact.favorite && !contact.archived).toArray()
+}
+
 export async function getContact(id: number): Promise<Contact | undefined> {
   return db.contacts.get(id)
 }

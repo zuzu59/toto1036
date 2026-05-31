@@ -8,7 +8,7 @@
       <div class="app-header__actions">
         <div class="app-header__stats">
           <span class="badge">{{ onlineLabel }}</span>
-          <span class="badge">{{ contacts.length }} visibles</span>
+          <span class="badge">{{ contactsBadgeLabel }}</span>
         </div>
         <details ref="hamburgerMenu" class="app-hamburger">
           <summary aria-label="Ouvrir le menu">☰</summary>
@@ -38,7 +38,14 @@
         </div>
 
         <SearchBar v-model="query" @clear="query = ''" />
-        <ContactList :contacts="contacts" :selected-id="selectedContactId" @select="selectContact" />
+        <p class="list-hint">{{ listHint }}</p>
+        <ContactList
+          :contacts="contacts"
+          :selected-id="selectedContactId"
+          :empty-title="query ? 'Aucun résultat' : 'Aucun favori'"
+          :empty-description="query ? 'Essaie une autre recherche.' : 'Cherche les autres contacts pour les retrouver.'"
+          @select="selectContact"
+        />
       </section>
 
       <section v-if="showEditor" class="panel panel--editor">
@@ -110,7 +117,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import ContactForm from '@/components/ContactForm.vue'
 import ContactList from '@/components/ContactList.vue'
 import SearchBar from '@/components/SearchBar.vue'
-import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, importContacts, importContactsCsv, listContacts, searchContacts, updateContact } from '@/services/contacts'
+import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, importContacts, importContactsCsv, listFavoriteContacts, searchContacts, updateContact } from '@/services/contacts'
 import type { Contact } from '@/types/contact'
 import { contactToDraft, createEmptyContactDraft, hasMeaningfulValue } from '@/utils/contacts'
 import { isVersionNewer } from '@/utils/releases'
@@ -138,6 +145,8 @@ const latestReleaseTag = ref<string | null>(null)
 let refreshTimer: number | undefined
 
 const onlineLabel = computed(() => (online.value ? 'En ligne' : 'Hors ligne'))
+const contactsBadgeLabel = computed(() => (query.value ? `${contacts.value.length} résultats` : `${contacts.value.length} favoris`))
+const listHint = computed(() => (query.value ? 'Les résultats peuvent inclure les contacts non favoris.' : 'Seuls les favoris s’affichent ici. Cherche les autres contacts.'))
 const appRelease = APP_RELEASE
 const repoUrl = 'https://github.com/zuzu59/z-PWA'
 const releaseUrl = `https://github.com/zuzu59/z-PWA/releases/tag/${appRelease}`
@@ -169,7 +178,7 @@ function showError(message: string) {
 
 async function refreshContacts() {
   const token = ++refreshToken.value
-  const results = query.value ? await searchContacts(query.value) : await listContacts()
+  const results = query.value ? await searchContacts(query.value) : await listFavoriteContacts()
   if (token === refreshToken.value) {
     contacts.value = results
   }
