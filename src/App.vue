@@ -17,7 +17,7 @@
             <button class="ghost-button" type="button" @click="exportAndClose('csv')">Exporter CSV</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('json')">Importer JSON</button>
             <button class="ghost-button" type="button" @click="openImportAndClose('csv')">Importer CSV</button>
-            <button class="ghost-button" type="button" @click="openChangelogAndClose">Voir le changelog</button>
+            <button class="ghost-button" type="button" @click="openGithubChangelogAndClose">Changelog GitHub</button>
             <button class="ghost-button" type="button" @click="openAboutAndClose">
               {{ updateAvailable ? 'About · nouvelle version disponible' : 'About' }}
             </button>
@@ -58,54 +58,19 @@
       <div class="app-footer__release">Release {{ appRelease }} · {{ appBuildLabel }}</div>
     </footer>
 
-    <section v-if="showChangelog" class="app-changelog-overlay" role="dialog" aria-modal="true" aria-labelledby="changelog-title" @click.self="closeChangelog">
-      <div class="app-changelog-panel">
-        <div class="app-changelog-panel__header">
-          <h2 id="changelog-title">Changelog</h2>
-          <button class="ghost-button" type="button" @click="closeChangelog">Fermer</button>
-        </div>
-        <section v-for="group in appChangelog" :key="group.tag" class="app-footer__changelog-group">
-          <h3>
-            <span>{{ group.tag }}</span>
-            <a v-if="group.releaseUrl" :href="group.releaseUrl" target="_blank" rel="noreferrer">Voir sur GitHub</a>
-          </h3>
-          <p class="app-footer__changelog-date">{{ group.dateTime }}</p>
-          <ul>
-            <li v-for="entry in group.entries" :key="entry">{{ entry }}</li>
-          </ul>
-        </section>
-      </div>
-    </section>
-
     <section v-if="showAbout" class="app-about-overlay" role="dialog" aria-modal="true" aria-labelledby="about-title" @click.self="closeAbout">
       <div class="app-about-panel">
         <div class="app-changelog-panel__header">
           <h2 id="about-title">About</h2>
           <button class="ghost-button" type="button" @click="closeAbout">Fermer</button>
         </div>
-        <p><strong>z-PWA Contacts</strong> est un carnet de contacts offline-first pour smartphone.</p>
-        <ul class="app-about-list">
-          <li>Stack : Vue 3, Vite, TypeScript, Dexie, vite-plugin-pwa</li>
-          <li>Stockage local uniquement</li>
-          <li>Import/export JSON et CSV</li>
-          <li>Projet : <a href="https://github.com/zuzu59/z-PWA" target="_blank" rel="noreferrer">GitHub</a></li>
-          <li>Release : <a :href="releaseUrl" target="_blank" rel="noreferrer">{{ appRelease }}</a></li>
-          <li>Version : {{ appRelease }} · {{ appBuildLabel }}</li>
-        </ul>
+        <p><strong>z-PWA Contacts</strong></p>
+        <p>Version : {{ appRelease }} · {{ appBuildLabel }}</p>
 
         <section v-if="updateAvailable" class="app-about-update">
           <strong>Nouvelle version disponible{{ latestReleaseTag ? ` : ${latestReleaseTag}` : '' }}</strong>
-          <p>Le changelog ci-dessous affiche les différences entre ta version et la dernière release GitHub.</p>
-          <section v-for="group in updateChangelogGroups" :key="group.tag" class="app-footer__changelog-group">
-            <h3>
-              <span>{{ group.tag }}</span>
-              <a v-if="group.releaseUrl" :href="group.releaseUrl" target="_blank" rel="noreferrer">Voir sur GitHub</a>
-            </h3>
-            <p class="app-footer__changelog-date">{{ group.dateTime }}</p>
-            <ul>
-              <li v-for="entry in group.entries" :key="entry">{{ entry }}</li>
-            </ul>
-          </section>
+          <p>Le changelog est consultable en ligne sur GitHub.</p>
+          <a class="ghost-link" :href="githubChangelogUrl" target="_blank" rel="noreferrer">Voir le changelog sur GitHub</a>
         </section>
       </div>
     </section>
@@ -137,8 +102,8 @@ import SearchBar from '@/components/SearchBar.vue'
 import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, importContacts, importContactsCsv, listContacts, searchContacts, updateContact } from '@/services/contacts'
 import type { Contact } from '@/types/contact'
 import { contactToDraft, createEmptyContactDraft, hasMeaningfulValue } from '@/utils/contacts'
-import { isVersionNewer, parseChangelogMarkdown, type ReleaseChangelogGroup } from '@/utils/releases'
-import { APP_BUILD_TIME, APP_CHANGELOG, APP_RELEASE } from '@/version'
+import { isVersionNewer } from '@/utils/releases'
+import { APP_BUILD_TIME, APP_RELEASE } from '@/version'
 
 const contacts = ref<Contact[]>([])
 const query = ref('')
@@ -153,20 +118,19 @@ const duplicateMessage = ref<string | null>(null)
 const importInput = ref<HTMLInputElement | null>(null)
 const importMode = ref<'json' | 'csv'>('json')
 const hamburgerMenu = ref<HTMLDetailsElement | null>(null)
-const showChangelog = ref(false)
 const showAbout = ref(false)
 const showHelp = ref(false)
 const online = ref(navigator.onLine)
 const refreshToken = ref(0)
 const updateAvailable = ref(false)
 const latestReleaseTag = ref<string | null>(null)
-const updateChangelogGroups = ref<ReleaseChangelogGroup[]>([])
+const latestReleaseUrl = ref<string | null>(null)
 let refreshTimer: number | undefined
 
 const onlineLabel = computed(() => (online.value ? 'En ligne' : 'Hors ligne'))
 const appRelease = APP_RELEASE
 const releaseUrl = `https://github.com/zuzu59/z-PWA/releases/tag/${appRelease}`
-const appChangelog = APP_CHANGELOG
+const githubChangelogUrl = computed(() => latestReleaseUrl.value ?? releaseUrl)
 const appBuildLabel = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'short',
   timeStyle: 'short',
@@ -339,23 +303,7 @@ function handleDocumentPointerDown(event: PointerEvent) {
   }
 }
 
-function openChangelog() {
-  showAbout.value = false
-  showHelp.value = false
-  showChangelog.value = true
-}
-
-function closeChangelog() {
-  showChangelog.value = false
-}
-
-function openChangelogAndClose() {
-  closeHamburgerMenu()
-  openChangelog()
-}
-
 function openAbout() {
-  showChangelog.value = false
   showHelp.value = false
   showAbout.value = true
 }
@@ -375,23 +323,21 @@ async function refreshUpdateStatus() {
     if (!response.ok) {
       updateAvailable.value = false
       latestReleaseTag.value = null
-      updateChangelogGroups.value = []
+      latestReleaseUrl.value = null
       return
     }
 
-    const payload = (await response.json()) as { tag_name?: unknown; body?: unknown }
+    const payload = (await response.json()) as { tag_name?: unknown; html_url?: unknown }
     const latestTag = typeof payload.tag_name === 'string' ? payload.tag_name : null
-    const latestBody = typeof payload.body === 'string' ? payload.body : ''
+    const latestUrl = typeof payload.html_url === 'string' ? payload.html_url : null
 
     latestReleaseTag.value = latestTag
+    latestReleaseUrl.value = latestUrl
     updateAvailable.value = Boolean(latestTag && isVersionNewer(latestTag, appRelease))
-    updateChangelogGroups.value = updateAvailable.value
-      ? parseChangelogMarkdown(latestBody).filter((group) => isVersionNewer(group.tag, appRelease))
-      : []
   } catch {
     updateAvailable.value = false
     latestReleaseTag.value = null
-    updateChangelogGroups.value = []
+    latestReleaseUrl.value = null
   }
 }
 
@@ -401,9 +347,13 @@ async function openAboutAndClose() {
   openAbout()
 }
 
+function openGithubChangelogAndClose() {
+  closeHamburgerMenu()
+  window.open(githubChangelogUrl.value, '_blank', 'noopener')
+}
+
 function openHelp() {
   showAbout.value = false
-  showChangelog.value = false
   showHelp.value = true
 }
 

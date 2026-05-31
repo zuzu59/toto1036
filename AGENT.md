@@ -17,10 +17,10 @@ Quand une modification est apportée à l’app, il faut :
 ## Règles de version
 
 - La version vit dans `src/version.ts` via `APP_RELEASE`.
-- Le changelog vit dans `CHANGELOG.md`.
-- Le changelog embarqué dans l’app vit aussi dans `src/version.ts` (`APP_CHANGELOG`).
-- Le footer de l’app affiche la release courante et l’heure de build.
-- Chaque changement publié doit augmenter la version (`v0.0.21` → `v0.0.22`, etc.).
+- Le changelog vit dans `CHANGELOG.md` uniquement pour la release GitHub.
+- L’app n’embarque pas le changelog : elle affiche seulement la version et la date/heure de build.
+- About peut vérifier en ligne la dernière release GitHub et ouvrir le changelog GitHub si une version plus récente existe.
+- Chaque changement publié doit augmenter la version (`v0.0.22` → `v0.0.23`, etc.).
 
 ## Procédure de mise à jour
 
@@ -33,8 +33,9 @@ Faire les changements nécessaires dans le code.
 Mettre à jour `src/version.ts` :
 
 - `APP_RELEASE` = nouvelle version
-- ajouter un bloc en tête de `APP_CHANGELOG`
-- conserver l’ordre décroissant : la plus récente en premier
+- conserver `APP_BUILD_TIME`
+
+Mettre aussi à jour `CHANGELOG.md` avec le détail de la release.
 
 ### 3) Mettre à jour le changelog externe
 
@@ -52,8 +53,8 @@ Si besoin, vérifier que les écrans suivants restent cohérents :
 - hamburger
 - About
 - Help
-- Changelog
 - formulaire de contact
+- lien vers le changelog GitHub
 
 ### 5) Vérifier le build
 
@@ -112,7 +113,7 @@ Une release GitHub est créée à partir du tag.
 
 - Le body de la release utilise `CHANGELOG.md`.
 - La release doit contenir le bon tag.
-- Le changelog affiché dans l’app doit rester aligné avec la release GitHub.
+- Le changelog est consulté sur GitHub, pas dans l’app.
 
 ## Contrôles avant publication
 

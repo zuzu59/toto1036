@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.23 — 31/05/2026 15:52
+- About vérifie la dernière release GitHub en ligne
+- Le changelog se consulte directement sur GitHub
+- Help explique l’usage et l’installation de la PWA
+
 ## v0.0.22 — 31/05/2026 15:36
 - About affiche le différentiel si une mise à jour existe
 - Le changelog manuel reste disponible
