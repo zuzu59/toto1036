@@ -23,6 +23,7 @@
       <div class="contact-card__main">
         <strong>{{ contact.displayName || contact.firstName || contact.lastName || 'Sans nom' }}</strong>
         <span>{{ contact.phone || contact.email || 'Aucun moyen de contact' }}</span>
+        <span v-if="addressSummary(contact)">{{ addressSummary(contact) }}</span>
       </div>
       <div class="contact-card__meta">
         <span v-if="contact.favorite" class="badge badge--gold">Favori</span>
@@ -51,4 +52,10 @@ withDefaults(
 defineEmits<{
   (e: 'select', id: number): void
 }>()
+
+function addressSummary(contact: Contact): string {
+  return [contact.addressLine1, contact.addressLine2, [contact.postalCode, contact.city].filter(Boolean).join(' '), contact.country]
+    .filter(Boolean)
+    .join(' · ')
+}
 </script>

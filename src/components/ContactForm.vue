@@ -37,6 +37,31 @@
       </label>
 
       <label class="form-grid__full">
+        Adresse 1
+        <input :value="modelValue.addressLine1" type="text" autocomplete="address-line1" @input="update('addressLine1', $event)" />
+      </label>
+
+      <label class="form-grid__full">
+        Adresse 2
+        <input :value="modelValue.addressLine2" type="text" autocomplete="address-line2" @input="update('addressLine2', $event)" />
+      </label>
+
+      <label>
+        Code postal
+        <input :value="modelValue.postalCode" type="text" inputmode="numeric" autocomplete="postal-code" @input="update('postalCode', $event)" />
+      </label>
+
+      <label>
+        Ville
+        <input :value="modelValue.city" type="text" autocomplete="address-level2" @input="update('city', $event)" />
+      </label>
+
+      <label class="form-grid__full">
+        Pays
+        <input :value="modelValue.country" type="text" autocomplete="country-name" @input="update('country', $event)" />
+      </label>
+
+      <label class="form-grid__full">
         Notes
         <textarea :value="modelValue.notes" rows="5" @input="update('notes', $event)"></textarea>
       </label>

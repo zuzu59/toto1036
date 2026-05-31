@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.5 — 31/05/2026 18:00
+- Ajout de champs d’adresse aux contacts
+- Adresse incluse dans la recherche et les imports/exports
+- Carte contact enrichie avec l’adresse
+
 ## v0.1.4 — 31/05/2026 17:20
 - La liste affiche seulement les favoris par défaut
 - Les autres contacts restent accessibles via la recherche

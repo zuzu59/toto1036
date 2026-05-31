@@ -16,6 +16,11 @@ function toRecord(draft: ContactDraft, existing?: Contact): Omit<Contact, 'id'> 
     displayName,
     phone: cleaned.phone,
     email: cleaned.email,
+    addressLine1: cleaned.addressLine1,
+    addressLine2: cleaned.addressLine2,
+    postalCode: cleaned.postalCode,
+    city: cleaned.city,
+    country: cleaned.country,
     notes: cleaned.notes,
     searchText: buildSearchText({ ...cleaned, displayName }),
     favorite: cleaned.favorite,
@@ -101,6 +106,11 @@ function csvToContactDraft(row: Record<string, string>): ContactDraft {
     displayName: row.displayname ?? row['nomaffiché'] ?? row['nomaffiche'] ?? '',
     phone: row.phone ?? row.tel ?? row.téléphone ?? row.telephone ?? '',
     email: row.email ?? row.mail ?? '',
+    addressLine1: row.addressline1 ?? row.address1 ?? row.street ?? row.rue ?? '',
+    addressLine2: row.addressline2 ?? row.address2 ?? row.complement ?? row.complementdadresse ?? '',
+    postalCode: row.postalcode ?? row.zip ?? row.zipcode ?? row.postcode ?? row.cp ?? '',
+    city: row.city ?? row.ville ?? '',
+    country: row.country ?? row.pays ?? '',
     notes: row.notes ?? row.note ?? '',
     favorite: truthyCsvValue(row.favorite ?? row.favori ?? ''),
     archived: truthyCsvValue(row.archived ?? row.archive ?? ''),
@@ -198,6 +208,11 @@ export async function exportContactsCsv(): Promise<string> {
     'displayName',
     'phone',
     'email',
+    'addressLine1',
+    'addressLine2',
+    'postalCode',
+    'city',
+    'country',
     'notes',
     'favorite',
     'archived',
@@ -211,6 +226,11 @@ export async function exportContactsCsv(): Promise<string> {
       contact.displayName,
       contact.phone,
       contact.email,
+      contact.addressLine1,
+      contact.addressLine2,
+      contact.postalCode,
+      contact.city,
+      contact.country,
       contact.notes,
       contact.favorite ? '1' : '0',
       contact.archived ? '1' : '0',
@@ -253,6 +273,11 @@ export async function importContacts(payload: unknown): Promise<ImportResult> {
       displayName: String(candidate.displayName ?? ''),
       phone: String(candidate.phone ?? ''),
       email: String(candidate.email ?? ''),
+      addressLine1: String(candidate.addressLine1 ?? ''),
+      addressLine2: String(candidate.addressLine2 ?? ''),
+      postalCode: String(candidate.postalCode ?? ''),
+      city: String(candidate.city ?? ''),
+      country: String(candidate.country ?? ''),
       notes: String(candidate.notes ?? ''),
       favorite: Boolean(candidate.favorite),
       archived: Boolean(candidate.archived),
@@ -299,7 +324,19 @@ export async function importContactsCsv(text: string): Promise<ImportResult> {
     })
 
     const draft = csvToContactDraft(record)
-    if (!buildDisplayName(draft) && !draft.firstName && !draft.lastName && !draft.phone && !draft.email && !draft.notes) {
+    if (
+      !buildDisplayName(draft) &&
+      !draft.firstName &&
+      !draft.lastName &&
+      !draft.phone &&
+      !draft.email &&
+      !draft.addressLine1 &&
+      !draft.addressLine2 &&
+      !draft.postalCode &&
+      !draft.city &&
+      !draft.country &&
+      !draft.notes
+    ) {
       skipped += 1
       continue
     }

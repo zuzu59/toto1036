@@ -5,6 +5,11 @@ export interface Contact {
   displayName: string
   phone: string
   email: string
+  addressLine1: string
+  addressLine2: string
+  postalCode: string
+  city: string
+  country: string
   notes: string
   searchText: string
   favorite: boolean
@@ -19,6 +24,11 @@ export interface ContactDraft {
   displayName: string
   phone: string
   email: string
+  addressLine1: string
+  addressLine2: string
+  postalCode: string
+  city: string
+  country: string
   notes: string
   favorite: boolean
   archived: boolean
