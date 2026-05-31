@@ -42,6 +42,10 @@
         />
       </section>
     </main>
+
+    <footer class="app-footer">
+      <span>Release {{ appRelease }}</span>
+    </footer>
   </div>
 </template>
 
@@ -53,6 +57,7 @@ import SearchBar from '@/components/SearchBar.vue'
 import { createContact, deleteContact, exportContacts, findPotentialDuplicates, importContacts, listContacts, searchContacts, updateContact } from '@/services/contacts'
 import type { Contact } from '@/types/contact'
 import { contactToDraft, createEmptyContactDraft, hasMeaningfulValue } from '@/utils/contacts'
+import { APP_RELEASE } from '@/version'
 
 const contacts = ref<Contact[]>([])
 const query = ref('')
@@ -69,6 +74,7 @@ const refreshToken = ref(0)
 let refreshTimer: number | undefined
 
 const onlineLabel = computed(() => (online.value ? 'En ligne' : 'Hors ligne'))
+const appRelease = APP_RELEASE
 
 function showNotice(message: string) {
   notice.value = message
