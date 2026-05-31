@@ -1,6 +1,11 @@
 # Changelog
 
-## 31/05/2026 15:40
+## v0.0.7 — 31/05/2026 14:58
+- Le changelog affiche maintenant le tag puis la date/heure
+- Lien direct vers les releases GitHub
+- Changelog maintenu par date/heure
+
+## v0.0.6 — 31/05/2026 15:40
 - Changelog replié par défaut dans l’app
 - Changelog disponible aussi sur GitHub Releases
 - Ajout de l’import/export CSV

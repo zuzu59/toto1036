@@ -351,6 +351,12 @@ textarea {
   text-decoration: underline;
 }
 
+.app-footer__changelog-date {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 .app-footer__changelog-group ul {
   margin: 0.45rem 0 0;
   padding-left: 1.1rem;
