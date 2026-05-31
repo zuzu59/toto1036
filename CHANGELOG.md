@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.6 — 31/05/2026 18:05
+- Jusqu’à 3 téléphones et 3 emails par contact
+- Import/export et recherche adaptés aux nouveaux champs
+- Cartes contact enrichies pour afficher tous les moyens de contact
+
 ## v0.1.5 — 31/05/2026 18:00
 - Ajout de champs d’adresse aux contacts
 - Adresse incluse dans la recherche et les imports/exports

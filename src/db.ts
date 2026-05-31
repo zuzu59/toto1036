@@ -9,6 +9,18 @@ class ContactsDatabase extends Dexie {
     this.version(1).stores({
       contacts: '++id, displayName, phone, email, searchText, favorite, archived, updatedAt',
     })
+    this.version(2)
+      .stores({
+        contacts: '++id, displayName, phone, email, searchText, favorite, archived, updatedAt',
+      })
+      .upgrade((tx) =>
+        tx.table('contacts').toCollection().modify((contact: Contact) => {
+          contact.phone2 ??= ''
+          contact.phone3 ??= ''
+          contact.email2 ??= ''
+          contact.email3 ??= ''
+        }),
+      )
   }
 }
 

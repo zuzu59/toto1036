@@ -27,13 +27,33 @@
       </label>
 
       <label>
-        Téléphone
+        Téléphone 1
         <input :value="modelValue.phone" type="tel" autocomplete="tel" @input="update('phone', $event)" />
       </label>
 
       <label>
-        Email
+        Téléphone 2
+        <input :value="modelValue.phone2" type="tel" autocomplete="tel" @input="update('phone2', $event)" />
+      </label>
+
+      <label>
+        Téléphone 3
+        <input :value="modelValue.phone3" type="tel" autocomplete="tel" @input="update('phone3', $event)" />
+      </label>
+
+      <label>
+        Email 1
         <input :value="modelValue.email" type="email" autocomplete="email" @input="update('email', $event)" />
+      </label>
+
+      <label>
+        Email 2
+        <input :value="modelValue.email2" type="email" autocomplete="email" @input="update('email2', $event)" />
+      </label>
+
+      <label>
+        Email 3
+        <input :value="modelValue.email3" type="email" autocomplete="email" @input="update('email3', $event)" />
       </label>
 
       <label class="form-grid__full">

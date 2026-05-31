@@ -224,7 +224,7 @@ async function saveContact() {
   try {
     const duplicates = await findPotentialDuplicates(draft.value, editorMode.value === 'edit' ? selectedContactId.value ?? undefined : undefined)
     if (duplicates.length) {
-      duplicateMessage.value = `Doublon possible détecté : ${duplicates.map((contact) => contact.displayName || contact.phone || contact.email).join(', ')}`
+      duplicateMessage.value = `Doublon possible détecté : ${duplicates.map((contact) => contact.displayName || contact.phone || contact.phone2 || contact.phone3 || contact.email || contact.email2 || contact.email3).join(', ')}`
       const keepGoing = window.confirm('Un doublon possible a été détecté. Continuer quand même ?')
       if (!keepGoing) {
         return

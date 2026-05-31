@@ -4,7 +4,11 @@ export interface Contact {
   lastName: string
   displayName: string
   phone: string
+  phone2: string
+  phone3: string
   email: string
+  email2: string
+  email3: string
   addressLine1: string
   addressLine2: string
   postalCode: string
@@ -23,7 +27,11 @@ export interface ContactDraft {
   lastName: string
   displayName: string
   phone: string
+  phone2: string
+  phone3: string
   email: string
+  email2: string
+  email3: string
   addressLine1: string
   addressLine2: string
   postalCode: string

@@ -22,7 +22,9 @@
     >
       <div class="contact-card__main">
         <strong>{{ contact.displayName || contact.firstName || contact.lastName || 'Sans nom' }}</strong>
-        <span>{{ contact.phone || contact.email || 'Aucun moyen de contact' }}</span>
+        <span v-if="phoneSummary(contact)">Tél. : {{ phoneSummary(contact) }}</span>
+        <span v-if="emailSummary(contact)">Mail : {{ emailSummary(contact) }}</span>
+        <span v-if="!phoneSummary(contact) && !emailSummary(contact)">Aucun moyen de contact</span>
         <span v-if="addressSummary(contact)">{{ addressSummary(contact) }}</span>
       </div>
       <div class="contact-card__meta">
@@ -52,6 +54,14 @@ withDefaults(
 defineEmits<{
   (e: 'select', id: number): void
 }>()
+
+function phoneSummary(contact: Contact): string {
+  return [contact.phone, contact.phone2, contact.phone3].filter(Boolean).join(' · ')
+}
+
+function emailSummary(contact: Contact): string {
+  return [contact.email, contact.email2, contact.email3].filter(Boolean).join(' · ')
+}
 
 function addressSummary(contact: Contact): string {
   return [contact.addressLine1, contact.addressLine2, [contact.postalCode, contact.city].filter(Boolean).join(' '), contact.country]

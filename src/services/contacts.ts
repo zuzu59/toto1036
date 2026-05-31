@@ -15,7 +15,11 @@ function toRecord(draft: ContactDraft, existing?: Contact): Omit<Contact, 'id'> 
     lastName: cleaned.lastName,
     displayName,
     phone: cleaned.phone,
+    phone2: cleaned.phone2,
+    phone3: cleaned.phone3,
     email: cleaned.email,
+    email2: cleaned.email2,
+    email3: cleaned.email3,
     addressLine1: cleaned.addressLine1,
     addressLine2: cleaned.addressLine2,
     postalCode: cleaned.postalCode,
@@ -105,7 +109,11 @@ function csvToContactDraft(row: Record<string, string>): ContactDraft {
     lastName: row.lastname ?? row.nom ?? row.surname ?? '',
     displayName: row.displayname ?? row['nomaffiché'] ?? row['nomaffiche'] ?? '',
     phone: row.phone ?? row.tel ?? row.téléphone ?? row.telephone ?? '',
+    phone2: row.phone2 ?? row.tel2 ?? row.telephone2 ?? '',
+    phone3: row.phone3 ?? row.tel3 ?? row.telephone3 ?? '',
     email: row.email ?? row.mail ?? '',
+    email2: row.email2 ?? row.mail2 ?? '',
+    email3: row.email3 ?? row.mail3 ?? '',
     addressLine1: row.addressline1 ?? row.address1 ?? row.street ?? row.rue ?? '',
     addressLine2: row.addressline2 ?? row.address2 ?? row.complement ?? row.complementdadresse ?? '',
     postalCode: row.postalcode ?? row.zip ?? row.zipcode ?? row.postcode ?? row.cp ?? '',
@@ -119,14 +127,16 @@ function csvToContactDraft(row: Record<string, string>): ContactDraft {
 
 async function saveImportedContact(draft: ContactDraft, existingContacts: Contact[]): Promise<boolean> {
   const normalizedName = normalizeText(buildDisplayName(draft))
-  const normalizedPhone = normalizePhone(draft.phone)
-  const normalizedEmail = normalizeEmail(draft.email)
+  const normalizedPhones = [draft.phone, draft.phone2, draft.phone3].map(normalizePhone).filter(Boolean)
+  const normalizedEmails = [draft.email, draft.email2, draft.email3].map(normalizeEmail).filter(Boolean)
 
   const duplicate = existingContacts.some((contact) => {
-    const samePhone = normalizedPhone && normalizePhone(contact.phone) === normalizedPhone
-    const sameEmail = normalizedEmail && normalizeEmail(contact.email) === normalizedEmail
+    const contactPhones = [contact.phone, contact.phone2, contact.phone3].map(normalizePhone).filter(Boolean)
+    const contactEmails = [contact.email, contact.email2, contact.email3].map(normalizeEmail).filter(Boolean)
+    const samePhone = normalizedPhones.some((value) => contactPhones.includes(value))
+    const sameEmail = normalizedEmails.some((value) => contactEmails.includes(value))
     const sameName = normalizedName && normalizeText(contact.displayName) === normalizedName
-    return samePhone || sameEmail || (sameName && !normalizedPhone && !normalizedEmail)
+    return samePhone || sameEmail || (sameName && !normalizedPhones.length && !normalizedEmails.length)
   })
 
   if (duplicate) {
@@ -207,7 +217,11 @@ export async function exportContactsCsv(): Promise<string> {
     'lastName',
     'displayName',
     'phone',
+    'phone2',
+    'phone3',
     'email',
+    'email2',
+    'email3',
     'addressLine1',
     'addressLine2',
     'postalCode',
@@ -225,7 +239,11 @@ export async function exportContactsCsv(): Promise<string> {
       contact.lastName,
       contact.displayName,
       contact.phone,
+      contact.phone2,
+      contact.phone3,
       contact.email,
+      contact.email2,
+      contact.email3,
       contact.addressLine1,
       contact.addressLine2,
       contact.postalCode,
@@ -272,7 +290,11 @@ export async function importContacts(payload: unknown): Promise<ImportResult> {
       lastName: String(candidate.lastName ?? ''),
       displayName: String(candidate.displayName ?? ''),
       phone: String(candidate.phone ?? ''),
+      phone2: String(candidate.phone2 ?? ''),
+      phone3: String(candidate.phone3 ?? ''),
       email: String(candidate.email ?? ''),
+      email2: String(candidate.email2 ?? ''),
+      email3: String(candidate.email3 ?? ''),
       addressLine1: String(candidate.addressLine1 ?? ''),
       addressLine2: String(candidate.addressLine2 ?? ''),
       postalCode: String(candidate.postalCode ?? ''),
@@ -329,7 +351,11 @@ export async function importContactsCsv(text: string): Promise<ImportResult> {
       !draft.firstName &&
       !draft.lastName &&
       !draft.phone &&
+      !draft.phone2 &&
+      !draft.phone3 &&
       !draft.email &&
+      !draft.email2 &&
+      !draft.email3 &&
       !draft.addressLine1 &&
       !draft.addressLine2 &&
       !draft.postalCode &&
