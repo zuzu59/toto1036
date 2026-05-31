@@ -65,13 +65,23 @@
           <button class="ghost-button" type="button" @click="closeAbout">Fermer</button>
         </div>
         <p><strong>z-PWA Contacts</strong></p>
+        <p>Auteur : zuzu59</p>
         <p>Version : {{ appRelease }} · {{ appBuildLabel }}</p>
+        <p>Un carnet de contacts offline-first, pensé pour smartphone.</p>
 
         <section v-if="updateAvailable" class="app-about-update">
           <strong>Nouvelle version disponible{{ latestReleaseTag ? ` : ${latestReleaseTag}` : '' }}</strong>
-          <p>Le changelog est consultable en ligne sur GitHub.</p>
-          <a class="ghost-link" :href="githubChangelogUrl" target="_blank" rel="noreferrer">Voir le changelog sur GitHub</a>
+          <p>Le changelog se consulte en ligne sur GitHub Releases.</p>
+          <a class="ghost-link" :href="githubReleasesUrl" target="_blank" rel="noreferrer">Voir les releases GitHub</a>
         </section>
+
+        <ul class="app-about-list">
+          <li>Stack : Vue 3, Vite, TypeScript, Dexie, vite-plugin-pwa</li>
+          <li>Stockage local uniquement</li>
+          <li>Import/export JSON et CSV</li>
+          <li>Projet : <a :href="repoUrl" target="_blank" rel="noreferrer">GitHub</a></li>
+          <li>Release : <a :href="releaseUrl" target="_blank" rel="noreferrer">{{ appRelease }}</a></li>
+        </ul>
       </div>
     </section>
 
@@ -124,13 +134,13 @@ const online = ref(navigator.onLine)
 const refreshToken = ref(0)
 const updateAvailable = ref(false)
 const latestReleaseTag = ref<string | null>(null)
-const latestReleaseUrl = ref<string | null>(null)
 let refreshTimer: number | undefined
 
 const onlineLabel = computed(() => (online.value ? 'En ligne' : 'Hors ligne'))
 const appRelease = APP_RELEASE
+const repoUrl = 'https://github.com/zuzu59/z-PWA'
 const releaseUrl = `https://github.com/zuzu59/z-PWA/releases/tag/${appRelease}`
-const githubChangelogUrl = computed(() => latestReleaseUrl.value ?? releaseUrl)
+const githubReleasesUrl = 'https://github.com/zuzu59/z-PWA/releases'
 const appBuildLabel = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'short',
   timeStyle: 'short',
@@ -323,21 +333,17 @@ async function refreshUpdateStatus() {
     if (!response.ok) {
       updateAvailable.value = false
       latestReleaseTag.value = null
-      latestReleaseUrl.value = null
       return
     }
 
-    const payload = (await response.json()) as { tag_name?: unknown; html_url?: unknown }
+    const payload = (await response.json()) as { tag_name?: unknown }
     const latestTag = typeof payload.tag_name === 'string' ? payload.tag_name : null
-    const latestUrl = typeof payload.html_url === 'string' ? payload.html_url : null
 
     latestReleaseTag.value = latestTag
-    latestReleaseUrl.value = latestUrl
     updateAvailable.value = Boolean(latestTag && isVersionNewer(latestTag, appRelease))
   } catch {
     updateAvailable.value = false
     latestReleaseTag.value = null
-    latestReleaseUrl.value = null
   }
 }
 
@@ -349,7 +355,7 @@ async function openAboutAndClose() {
 
 function openGithubChangelogAndClose() {
   closeHamburgerMenu()
-  window.open(githubChangelogUrl.value, '_blank', 'noopener')
+  window.open(githubReleasesUrl, '_blank', 'noopener')
 }
 
 function openHelp() {

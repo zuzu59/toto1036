@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.1 — 31/05/2026 16:27
+- About enrichi avec le nom de l’auteur et les liens GitHub
+- Le changelog est consultable sur la page GitHub Releases
+- Panneau About plus joli et plus complet
+
 ## v0.1.0 — 31/05/2026 15:56
 - Help placé en premier dans le hamburger
 - Passage à la version majeure 0.1.0

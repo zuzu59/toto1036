@@ -19,8 +19,9 @@ Quand une modification est apportée à l’app, il faut :
 - La version vit dans `src/version.ts` via `APP_RELEASE`.
 - Le changelog vit dans `CHANGELOG.md` uniquement pour la release GitHub.
 - L’app n’embarque pas le changelog : elle affiche seulement la version et la date/heure de build.
-- About peut vérifier en ligne la dernière release GitHub et ouvrir le changelog GitHub si une version plus récente existe.
-- Chaque changement publié doit augmenter la version (`v0.0.22` → `v0.0.23`, etc.).
+- About affiche le nom de l’auteur, la version, et un état de mise à jour en ligne si une release plus récente existe.
+- Le bouton “Changelog GitHub” pointe toujours vers la page GitHub Releases (`https://github.com/zuzu59/z-PWA/releases`).
+- Chaque changement publié doit augmenter la version (`v0.1.0` → `v0.1.1`, etc.).
 
 ## Procédure de mise à jour
 
