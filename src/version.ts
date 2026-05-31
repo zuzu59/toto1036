@@ -1,7 +1,17 @@
-export const APP_RELEASE = 'v0.0.14'
+export const APP_RELEASE = 'v0.0.15'
 export const APP_BUILD_TIME = __APP_BUILD_TIME__
 
 export const APP_CHANGELOG = [
+  {
+    tag: 'v0.0.15',
+    dateTime: '31/05/2026 15:18',
+    entries: [
+      'Menu du hamburger rendu plus compact',
+      'Moins de padding pour les actions secondaires',
+      'Interface plus dense et propre sur mobile',
+    ],
+    releaseUrl: 'https://github.com/zuzu59/z-PWA/releases/tag/v0.0.15',
+  },
   {
     tag: 'v0.0.14',
     dateTime: '31/05/2026 15:15',

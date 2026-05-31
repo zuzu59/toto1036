@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.15 — 31/05/2026 15:18
+- Menu du hamburger rendu plus compact
+- Moins de padding pour les actions secondaires
+- Interface plus dense et propre sur mobile
+
 ## v0.0.14 — 31/05/2026 15:15
 - Hamburger légèrement décalé vers l’intérieur
 - Menu plus élégant sur smartphone
