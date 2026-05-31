@@ -300,6 +300,7 @@ function handleDocumentPointerDown(event: PointerEvent) {
 }
 
 function openChangelog() {
+  showAbout.value = false
   showChangelog.value = true
 }
 
@@ -313,6 +314,7 @@ function openChangelogAndClose() {
 }
 
 function openAbout() {
+  showChangelog.value = false
   showAbout.value = true
 }
 
@@ -320,8 +322,60 @@ function closeAbout() {
   showAbout.value = false
 }
 
-function openAboutAndClose() {
+function parseVersionTag(tag: string): number[] {
+  return tag
+    .replace(/^v/i, '')
+    .split('.')
+    .map((part) => Number.parseInt(part, 10) || 0)
+}
+
+function isVersionNewer(remoteTag: string, currentTag: string): boolean {
+  const remote = parseVersionTag(remoteTag)
+  const current = parseVersionTag(currentTag)
+  const length = Math.max(remote.length, current.length)
+
+  for (let index = 0; index < length; index += 1) {
+    const remotePart = remote[index] ?? 0
+    const currentPart = current[index] ?? 0
+    if (remotePart > currentPart) {
+      return true
+    }
+    if (remotePart < currentPart) {
+      return false
+    }
+  }
+
+  return false
+}
+
+async function getLatestGithubReleaseTag(): Promise<string | null> {
+  const response = await fetch('https://api.github.com/repos/zuzu59/z-PWA/releases/latest', {
+    headers: {
+      Accept: 'application/vnd.github+json',
+    },
+  })
+
+  if (!response.ok) {
+    return null
+  }
+
+  const payload = (await response.json()) as { tag_name?: unknown }
+  return typeof payload.tag_name === 'string' ? payload.tag_name : null
+}
+
+async function openAboutAndClose() {
   closeHamburgerMenu()
+
+  try {
+    const latestTag = await getLatestGithubReleaseTag()
+    if (latestTag && isVersionNewer(latestTag, appRelease)) {
+      openChangelog()
+      return
+    }
+  } catch {
+    // ignore network/API issues and show About normally
+  }
+
   openAbout()
 }
 

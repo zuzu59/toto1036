@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.20 — 31/05/2026 15:30
+- About vérifie la dernière release GitHub
+- Changelog affiché automatiquement si une version plus récente existe
+- Détection de mise à jour centralisée
+
 ## v0.0.19 — 31/05/2026 15:28
 - Bouton Supprimer déplacé dans le formulaire
 - Confirmation conservée avant suppression
