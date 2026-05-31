@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import ContactForm from '@/components/ContactForm.vue'
 import ContactList from '@/components/ContactList.vue'
 import SearchBar from '@/components/SearchBar.vue'
@@ -65,6 +65,8 @@ const error = ref('')
 const duplicateMessage = ref<string | null>(null)
 const importInput = ref<HTMLInputElement | null>(null)
 const online = ref(navigator.onLine)
+const refreshToken = ref(0)
+let refreshTimer: number | undefined
 
 const onlineLabel = computed(() => (online.value ? 'En ligne' : 'Hors ligne'))
 
@@ -89,7 +91,11 @@ function showError(message: string) {
 }
 
 async function refreshContacts() {
-  contacts.value = query.value ? await searchContacts(query.value) : await listContacts()
+  const token = ++refreshToken.value
+  const results = query.value ? await searchContacts(query.value) : await listContacts()
+  if (token === refreshToken.value) {
+    contacts.value = results
+  }
 }
 
 function startNewContact() {
@@ -227,17 +233,30 @@ async function handleImportFile(event: Event) {
   }
 }
 
-watch(query, async () => {
-  await refreshContacts()
+const handleOnline = () => {
+  online.value = true
+}
+
+const handleOffline = () => {
+  online.value = false
+}
+
+watch(query, () => {
+  window.clearTimeout(refreshTimer)
+  refreshTimer = window.setTimeout(() => {
+    void refreshContacts()
+  }, 180)
 })
 
 onMounted(async () => {
   await refreshContacts()
-  window.addEventListener('online', () => {
-    online.value = true
-  })
-  window.addEventListener('offline', () => {
-    online.value = false
-  })
+  window.addEventListener('online', handleOnline)
+  window.addEventListener('offline', handleOffline)
+})
+
+onUnmounted(() => {
+  window.clearTimeout(refreshTimer)
+  window.removeEventListener('online', handleOnline)
+  window.removeEventListener('offline', handleOffline)
 })
 </script>
