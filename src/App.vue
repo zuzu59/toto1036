@@ -65,13 +65,14 @@
           <button class="ghost-button" type="button" @click="closeAbout">Fermer</button>
         </div>
         <p><strong>z-PWA Contacts</strong></p>
-        <p>Auteur : zuzu59</p>
+        <p>Auteur : <a href="https://github.com/zuzu59" target="_blank" rel="noreferrer">Christian Zufferey</a></p>
+        <p>Email : <a href="mailto:christian@zufferey.com">christian@zufferey.com</a></p>
         <p>Version : {{ appRelease }} · {{ appBuildLabel }}</p>
         <p>Un carnet de contacts offline-first, pensé pour smartphone.</p>
 
         <section v-if="updateAvailable" class="app-about-update">
           <strong>Nouvelle version disponible{{ latestReleaseTag ? ` : ${latestReleaseTag}` : '' }}</strong>
-          <p>Le changelog se consulte en ligne sur GitHub Releases.</p>
+          <p>Fais un refresh de la page (sur Android, tire la page vers le bas) pour récupérer la dernière version.</p>
           <a class="ghost-link" :href="githubReleasesUrl" target="_blank" rel="noreferrer">Voir les releases GitHub</a>
         </section>
 

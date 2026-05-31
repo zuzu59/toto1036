@@ -1,6 +1,11 @@
 # Changelog
 
-## v0.1.1 — 31/05/2026 16:27
+## v0.1.2 — 31/05/2026 17:10
+- About affiche le lien auteur et l’email
+- Message de refresh ajouté lors d’une nouvelle version
+- Le changelog reste consultable sur GitHub Releases
+
+## v0.1.1 — 31/05/2026 15:59
 - About enrichi avec le nom de l’auteur et les liens GitHub
 - Le changelog est consultable sur la page GitHub Releases
 - Panneau About plus joli et plus complet
