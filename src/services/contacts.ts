@@ -10,7 +10,7 @@ function nowIso(): string {
 function toRecord(draft: ContactDraft, existing?: Contact): Omit<Contact, 'id'> {
   const cleaned = trimContactDraft(draft)
   const displayName = buildDisplayName(cleaned)
-  const resolved: Omit<Contact, 'id'> = {
+  return {
     firstName: cleaned.firstName,
     lastName: cleaned.lastName,
     displayName,
@@ -23,8 +23,109 @@ function toRecord(draft: ContactDraft, existing?: Contact): Omit<Contact, 'id'> 
     createdAt: existing?.createdAt ?? nowIso(),
     updatedAt: nowIso(),
   }
+}
 
-  return resolved
+function escapeCsvValue(value: string): string {
+  const escaped = value.replace(/"/g, '""')
+  return /["\r\n;]/.test(escaped) ? `"${escaped}"` : escaped
+}
+
+function stringifyCsvRow(values: string[]): string {
+  return values.map((value) => escapeCsvValue(value)).join(';')
+}
+
+function normalizeHeader(value: string): string {
+  return normalizeText(value)
+    .replace(/[^a-z0-9]+/g, '')
+    .trim()
+}
+
+function sniffDelimiter(text: string): string {
+  const firstLine = text.split(/\r?\n/).find((line) => line.trim().length > 0) ?? ''
+  const counts: Array<[string, number]> = [
+    [';', (firstLine.match(/;/g) ?? []).length],
+    [',', (firstLine.match(/,/g) ?? []).length],
+    ['\t', (firstLine.match(/\t/g) ?? []).length],
+  ]
+
+  counts.sort((a, b) => b[1] - a[1])
+  return counts[0]?.[0] ?? ';'
+}
+
+function parseDelimitedRow(line: string, delimiter: string): string[] {
+  const values: string[] =
+    []
+  let current = ''
+  let inQuotes = false
+
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i]
+    const next = line[i + 1]
+
+    if (char === '"') {
+      if (inQuotes && next === '"') {
+        current += '"'
+        i += 1
+      } else {
+        inQuotes = !inQuotes
+      }
+      continue
+    }
+
+    if (!inQuotes && char === delimiter) {
+      values.push(current)
+      current = ''
+      continue
+    }
+
+    current += char
+  }
+
+  values.push(current)
+  return values
+}
+
+function parseDelimitedText(text: string, delimiter: string): string[][] {
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter((line) => line.trim().length > 0)
+  return lines.map((line) => parseDelimitedRow(line, delimiter))
+}
+
+function truthyCsvValue(value: string): boolean {
+  return ['1', 'true', 'yes', 'oui', 'y', 'ok'].includes(normalizeText(value))
+}
+
+function csvToContactDraft(row: Record<string, string>): ContactDraft {
+  return {
+    firstName: row.firstname ?? row.prenom ?? row.prénom ?? '',
+    lastName: row.lastname ?? row.nom ?? row.surname ?? '',
+    displayName: row.displayname ?? row['nomaffiché'] ?? row['nomaffiche'] ?? '',
+    phone: row.phone ?? row.tel ?? row.téléphone ?? row.telephone ?? '',
+    email: row.email ?? row.mail ?? '',
+    notes: row.notes ?? row.note ?? '',
+    favorite: truthyCsvValue(row.favorite ?? row.favori ?? ''),
+    archived: truthyCsvValue(row.archived ?? row.archive ?? ''),
+  }
+}
+
+async function saveImportedContact(draft: ContactDraft, existingContacts: Contact[]): Promise<boolean> {
+  const normalizedName = normalizeText(buildDisplayName(draft))
+  const normalizedPhone = normalizePhone(draft.phone)
+  const normalizedEmail = normalizeEmail(draft.email)
+
+  const duplicate = existingContacts.some((contact) => {
+    const samePhone = normalizedPhone && normalizePhone(contact.phone) === normalizedPhone
+    const sameEmail = normalizedEmail && normalizeEmail(contact.email) === normalizedEmail
+    const sameName = normalizedName && normalizeText(contact.displayName) === normalizedName
+    return samePhone || sameEmail || (sameName && !normalizedPhone && !normalizedEmail)
+  })
+
+  if (duplicate) {
+    return false
+  }
+
+  const saved = await createContact(draft)
+  existingContacts.push(saved)
+  return true
 }
 
 export async function listContacts(): Promise<Contact[]> {
@@ -85,6 +186,38 @@ export async function exportContacts(): Promise<string> {
   )
 }
 
+export async function exportContactsCsv(): Promise<string> {
+  const contacts = await listContacts()
+  const header = stringifyCsvRow([
+    'firstName',
+    'lastName',
+    'displayName',
+    'phone',
+    'email',
+    'notes',
+    'favorite',
+    'archived',
+    'createdAt',
+    'updatedAt',
+  ])
+  const rows = contacts.map((contact) =>
+    stringifyCsvRow([
+      contact.firstName,
+      contact.lastName,
+      contact.displayName,
+      contact.phone,
+      contact.email,
+      contact.notes,
+      contact.favorite ? '1' : '0',
+      contact.archived ? '1' : '0',
+      contact.createdAt,
+      contact.updatedAt,
+    ]),
+  )
+
+  return ['\uFEFF' + header, ...rows].join('\n')
+}
+
 export async function importContacts(payload: unknown): Promise<ImportResult> {
   if (!payload || typeof payload !== 'object') {
     throw new Error('Fichier JSON invalide')
@@ -121,38 +254,58 @@ export async function importContacts(payload: unknown): Promise<ImportResult> {
       archived: Boolean(candidate.archived),
     }
 
-    const normalizedName = normalizeText(buildDisplayName(draft))
-    const normalizedPhone = normalizePhone(draft.phone)
-    const normalizedEmail = normalizeEmail(draft.email)
-
-    const duplicate = existingContacts.some((contact) => {
-      const samePhone = normalizedPhone && normalizePhone(contact.phone) === normalizedPhone
-      const sameEmail = normalizedEmail && normalizeEmail(contact.email) === normalizedEmail
-      const sameName = normalizedName && normalizeText(contact.displayName) === normalizedName
-      return samePhone || sameEmail || (sameName && !normalizedPhone && !normalizedEmail)
-    })
-
-    if (duplicate) {
+    const wasImported = await saveImportedContact(draft, existingContacts)
+    if (wasImported) {
+      imported += 1
+    } else {
       duplicates += 1
+    }
+  }
+
+  return { imported, skipped, duplicates }
+}
+
+export async function importContactsCsv(text: string): Promise<ImportResult> {
+  if (!text.trim()) {
+    throw new Error('Fichier CSV vide')
+  }
+
+  const delimiter = sniffDelimiter(text)
+  const rows = parseDelimitedText(text, delimiter)
+
+  if (rows.length < 2) {
+    throw new Error('Le fichier CSV doit contenir un en-tête et au moins une ligne')
+  }
+
+  const headers = rows[0].map((header) => normalizeHeader(header))
+  const existingContacts = await listContacts()
+  let imported = 0
+  let skipped = 0
+  let duplicates = 0
+
+  for (const row of rows.slice(1)) {
+    if (!row.some((value) => value.trim().length > 0)) {
+      skipped += 1
       continue
     }
 
-    await createContact(draft)
-    imported += 1
-    existingContacts.push({
-      id: -1,
-      firstName: draft.firstName,
-      lastName: draft.lastName,
-      displayName: buildDisplayName(draft),
-      phone: draft.phone,
-      email: draft.email,
-      notes: draft.notes,
-      searchText: buildSearchText(draft),
-      favorite: draft.favorite,
-      archived: draft.archived,
-      createdAt: nowIso(),
-      updatedAt: nowIso(),
+    const record: Record<string, string> = {}
+    headers.forEach((header, index) => {
+      record[header] = row[index] ?? ''
     })
+
+    const draft = csvToContactDraft(record)
+    if (!buildDisplayName(draft) && !draft.firstName && !draft.lastName && !draft.phone && !draft.email && !draft.notes) {
+      skipped += 1
+      continue
+    }
+
+    const wasImported = await saveImportedContact(draft, existingContacts)
+    if (wasImported) {
+      imported += 1
+    } else {
+      duplicates += 1
+    }
   }
 
   return { imported, skipped, duplicates }

@@ -19,12 +19,14 @@
       <section class="panel panel--list">
         <div class="panel__actions">
           <button class="primary-button" type="button" @click="startNewContact">Nouveau contact</button>
-          <button class="ghost-button" type="button" @click="exportAll">Exporter</button>
-          <button class="ghost-button" type="button" @click="openImportPicker">Importer</button>
+          <button class="ghost-button" type="button" @click="exportAll">Exporter JSON</button>
+          <button class="ghost-button" type="button" @click="exportAllCsv">Exporter CSV</button>
+          <button class="ghost-button" type="button" @click="openImportPicker('json')">Importer JSON</button>
+          <button class="ghost-button" type="button" @click="openImportPicker('csv')">Importer CSV</button>
           <button class="ghost-button" type="button" :disabled="!selectedContactId" @click="removeSelected">
             Supprimer
           </button>
-          <input ref="importInput" class="sr-only" type="file" accept="application/json" @change="handleImportFile" />
+          <input ref="importInput" class="sr-only" type="file" accept=".json,.csv,application/json,text/csv" @change="handleImportFile" />
         </div>
 
         <SearchBar v-model="query" @clear="query = ''" />
@@ -54,7 +56,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import ContactForm from '@/components/ContactForm.vue'
 import ContactList from '@/components/ContactList.vue'
 import SearchBar from '@/components/SearchBar.vue'
-import { createContact, deleteContact, exportContacts, findPotentialDuplicates, importContacts, listContacts, searchContacts, updateContact } from '@/services/contacts'
+import { createContact, deleteContact, exportContacts, exportContactsCsv, findPotentialDuplicates, importContacts, importContactsCsv, listContacts, searchContacts, updateContact } from '@/services/contacts'
 import type { Contact } from '@/types/contact'
 import { contactToDraft, createEmptyContactDraft, hasMeaningfulValue } from '@/utils/contacts'
 import { APP_BUILD_TIME, APP_RELEASE } from '@/version'
@@ -69,6 +71,7 @@ const notice = ref('')
 const error = ref('')
 const duplicateMessage = ref<string | null>(null)
 const importInput = ref<HTMLInputElement | null>(null)
+const importMode = ref<'json' | 'csv'>('json')
 const online = ref(navigator.onLine)
 const refreshToken = ref(0)
 let refreshTimer: number | undefined
@@ -213,13 +216,30 @@ async function exportAll() {
     anchor.download = `contacts-${new Date().toISOString().slice(0, 10)}.json`
     anchor.click()
     URL.revokeObjectURL(url)
-    showNotice('Export généré.')
+    showNotice('Export JSON généré.')
   } catch (err) {
     showError(err instanceof Error ? err.message : 'Impossible d’exporter les contacts.')
   }
 }
 
-function openImportPicker() {
+async function exportAllCsv() {
+  try {
+    const payload = await exportContactsCsv()
+    const blob = new Blob([payload], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = `contacts-${new Date().toISOString().slice(0, 10)}.csv`
+    anchor.click()
+    URL.revokeObjectURL(url)
+    showNotice('Export CSV généré.')
+  } catch (err) {
+    showError(err instanceof Error ? err.message : 'Impossible d’exporter les contacts en CSV.')
+  }
+}
+
+function openImportPicker(mode: 'json' | 'csv') {
+  importMode.value = mode
   importInput.value?.click()
 }
 
@@ -234,12 +254,12 @@ async function handleImportFile(event: Event) {
 
   try {
     const text = await file.text()
-    const payload = JSON.parse(text) as unknown
-    const result = await importContacts(payload)
+    const isCsv = importMode.value === 'csv' || file.name.toLowerCase().endsWith('.csv') || file.type === 'text/csv'
+    const result = isCsv ? await importContactsCsv(text) : await importContacts(JSON.parse(text) as unknown)
     await refreshContacts()
     showNotice(`Import terminé : ${result.imported} ajouté(s), ${result.duplicates} doublon(s), ${result.skipped} ignoré(s).`)
   } catch (err) {
-    showError(err instanceof Error ? err.message : 'Fichier JSON invalide.')
+    showError(err instanceof Error ? err.message : 'Fichier invalide.')
   }
 }
 
