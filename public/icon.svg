@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="z-PWA Contacts">
+  <rect width="512" height="512" rx="112" fill="#0f172a"/>
+  <circle cx="192" cy="176" r="56" fill="#38bdf8"/>
+  <path d="M96 392c0-66.3 53.7-120 120-120s120 53.7 120 120" fill="none" stroke="#38bdf8" stroke-width="36" stroke-linecap="round"/>
+  <rect x="276" y="128" width="128" height="36" rx="18" fill="#f8fafc"/>
+  <rect x="276" y="192" width="96" height="24" rx="12" fill="#cbd5e1"/>
+  <rect x="276" y="236" width="112" height="24" rx="12" fill="#cbd5e1"/>
+  <rect x="276" y="280" width="80" height="24" rx="12" fill="#cbd5e1"/>
+</svg>

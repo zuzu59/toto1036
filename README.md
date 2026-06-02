@@ -1,8 +1,41 @@
 # z-PWA
-Petit POC pour dev une app PWA au moyen d'un agent IA qui devrait tourner en offline sur un smartphone
 
-Le but est de commencer par un prompt minimaliste qui explique juste l'idée et après de le faire analyser 
-par différents agents IA afin de l'améliorer et de vérifier si l'agent a bien compris ce que l'on veut faire ?
+POC de carnet de contacts offline-first pour smartphone.
 
-C'est dans les différentes branches du projet qu'il faut aller voir les résultats du POC !
+## Stack
 
+- Vite
+- Vue 3
+- TypeScript
+- Dexie.js
+- vite-plugin-pwa
+
+## Fonctionnalités
+
+- création de contacts
+- recherche locale
+- consultation et modification
+- persistance locale via IndexedDB
+- installation PWA
+- usage hors ligne
+
+## Lancer le projet
+
+```bash
+npm install
+npm run dev
+```
+
+## Vérifier le build
+
+```bash
+npm run build
+```
+
+## Structure
+
+- `src/db.ts` : base Dexie
+- `src/services/contacts.ts` : CRUD contacts
+- `src/utils/normalize.ts` : recherche normalisée
+- `src/components/` : UI
+- `vite.config.ts` : configuration PWA
