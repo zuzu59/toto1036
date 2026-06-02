@@ -16,6 +16,13 @@ const notice = ref('');
 const isOnline = ref(navigator.onLine);
 
 const statusLabel = computed(() => (isOnline.value ? 'En ligne' : 'Hors ligne'));
+const appVersion = __APP_VERSION__;
+const buildLabel = computed(() =>
+  new Intl.DateTimeFormat('fr-FR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(new Date(__BUILD_AT__)),
+);
 
 async function refreshList() {
   contacts.value = await listContacts(query.value);
@@ -193,6 +200,12 @@ onBeforeUnmount(() => {
           </div>
         </section>
       </main>
+
+      <footer class="card footer">
+        <span>Version {{ appVersion }}</span>
+        <span>•</span>
+        <span>Build du {{ buildLabel }}</span>
+      </footer>
     </div>
   </div>
 </template>

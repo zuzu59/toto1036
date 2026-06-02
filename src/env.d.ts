@@ -1,5 +1,8 @@
 /// <reference types="vite/client" />
 
+declare const __APP_VERSION__: string;
+declare const __BUILD_AT__: string;
+
 declare module 'virtual:pwa-register';
 declare module '*.vue' {
   import type { DefineComponent } from 'vue';

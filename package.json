@@ -1,11 +1,11 @@
 {
   "name": "z-pwa",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.12",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -p tsconfig.app.json --noEmit && VITE_BASE_URL=/toto1036/ vite build",
+    "build": "node scripts/build.mjs",
     "preview": "vite preview",
     "typecheck": "vue-tsc -p tsconfig.app.json --noEmit"
   },

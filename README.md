@@ -32,6 +32,12 @@ npm run dev
 npm run build
 ```
 
+## Versioning
+
+La version affichée dans l'application provient de `package.json` et doit rester synchronisée avec un tag Git correspondant au format `v0.0.1`.
+
+À chaque release, il faut incrémenter la version, créer le tag Git associé, puis relancer le build.
+
 ## Déploiement GitHub Pages
 
 Le projet est prévu pour le mode **Deploy from a branch**.
