@@ -7,6 +7,8 @@ import SearchBar from './components/SearchBar.vue';
 import { createContact, deleteContact, getContact, listContacts, updateContact } from './services/contacts';
 import type { Contact, ContactInput } from './types/contact';
 
+const menuRef = ref<HTMLElement | null>(null);
+const aboutMenuOpen = ref(false);
 const contacts = ref<Contact[]>([]);
 const selectedContact = ref<Contact | null>(null);
 const mode = ref<'list' | 'create' | 'edit' | 'detail'>('list');
@@ -61,6 +63,33 @@ function returnToList() {
 
 function cancelEdit() {
   mode.value = 'detail';
+}
+
+function toggleAboutMenu() {
+  aboutMenuOpen.value = !aboutMenuOpen.value;
+}
+
+function closeAboutMenu() {
+  aboutMenuOpen.value = false;
+}
+
+function handleDocumentClick(event: MouseEvent) {
+  if (!aboutMenuOpen.value) {
+    return;
+  }
+
+  const target = event.target as Node | null;
+  if (target && menuRef.value?.contains(target)) {
+    return;
+  }
+
+  closeAboutMenu();
+}
+
+function handleDocumentKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    closeAboutMenu();
+  }
 }
 
 async function saveCreate(payload: ContactInput) {
@@ -135,25 +164,66 @@ function handleOffline() {
 onMounted(async () => {
   window.addEventListener('online', handleOnline);
   window.addEventListener('offline', handleOffline);
+  document.addEventListener('click', handleDocumentClick);
+  document.addEventListener('keydown', handleDocumentKeydown);
   await refreshList();
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('online', handleOnline);
   window.removeEventListener('offline', handleOffline);
+  document.removeEventListener('click', handleDocumentClick);
+  document.removeEventListener('keydown', handleDocumentKeydown);
 });
 </script>
 
 <template>
   <div class="container">
     <div class="shell">
-      <header class="card header">
-        <div class="row" style="justify-content: space-between; align-items: start;">
+      <header ref="menuRef" class="card header header-shell">
+        <div class="row header-top">
           <div>
             <h1>z-PWA Contacts</h1>
             <p>Carnet de contacts local, installable et utilisable hors ligne.</p>
           </div>
-          <span class="badge">{{ statusLabel }}</span>
+
+          <div class="row header-actions">
+            <span class="badge">{{ statusLabel }}</span>
+            <div class="menu-wrapper">
+              <button
+                class="menu-button"
+                type="button"
+                aria-label="Ouvrir le menu"
+                :aria-expanded="aboutMenuOpen"
+                @click.stop="toggleAboutMenu"
+              >
+                ☰
+              </button>
+
+              <div v-if="aboutMenuOpen" class="menu-dropdown card" role="menu">
+                <div class="menu-title">About</div>
+                <a class="menu-link" href="https://github.com/zuzu59" target="_blank" rel="noreferrer">
+                  @zuzu59
+                </a>
+                <a
+                  class="menu-link"
+                  href="https://github.com/zuzu59/toto1036/tree/tutu"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Projet GitHub
+                </a>
+                <a
+                  class="menu-link"
+                  href="https://github.com/zuzu59/toto1036/releases"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  v{{ appVersion }} — {{ buildLabel }}
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
         <p v-if="notice" class="meta" style="margin-top: 12px;">{{ notice }}</p>
       </header>

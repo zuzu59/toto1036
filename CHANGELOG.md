@@ -69,3 +69,5 @@ v0.1.10 — 2026-05-31 18:28:57 +02:00 : fusion de l’import Google CSV pour st
 v0.1.11 — 2026-05-31 18:38:06 +02:00 : l’import Google n’active plus automatiquement le favori, ce qui évite un effet de bord sur les données importées.
 
 v0.1.12 — 2026-06-02 20:59:05 +02:00 : bascule du projet vers un POC PWA de carnet de contacts offline-first avec Vite, Vue 3, TypeScript, Dexie et `vite-plugin-pwa`, ajout du CRUD local, de la recherche normalisée, du service worker, du déploiement GitHub Pages via `/docs`, et affichage de la version et de l’horodatage de build en bas de l’application.
+
+v0.1.13 — 2026-06-02 21:04:23 +02:00 : ajout d’un hamburger en haut à droite avec un menu About contenant le lien vers le profil GitHub du propriétaire, le lien du dépôt sur la branche tutu, ainsi que la version de l’application et l’horodatage du build avec accès direct aux releases du projet.
