@@ -34,9 +34,15 @@ npm run build
 
 ## Déploiement GitHub Pages
 
-Un workflow GitHub Actions est configuré dans `.github/workflows/deploy-pages.yml`.
+Le projet est prévu pour le mode **Deploy from a branch**.
 
-Il suffit de pousser sur `master` ou `tutu` pour lancer le déploiement sur GitHub Pages.
+Configuration recommandée dans GitHub Pages :
+
+- Source : `Deploy from a branch`
+- Branch : `tutu`
+- Folder : `/docs`
+
+Le build Vite génère maintenant le site dans `docs/`.
 
 Le site est prévu pour être servi sous le chemin :
 

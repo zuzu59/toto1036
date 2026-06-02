@@ -6,6 +6,9 @@ const base = process.env.VITE_BASE_URL ?? '/';
 
 export default defineConfig({
   base,
+  build: {
+    outDir: 'docs',
+  },
   plugins: [
     vue(),
     VitePWA({

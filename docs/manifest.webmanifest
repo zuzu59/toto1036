@@ -1,0 +1,1 @@
+{"name":"z-PWA Contacts","short_name":"zContacts","description":"Carnet de contacts offline-first","start_url":"/toto1036/","display":"standalone","background_color":"#f8fafc","theme_color":"#0f172a","lang":"en","scope":"/toto1036/","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
