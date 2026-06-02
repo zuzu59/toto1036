@@ -14,6 +14,7 @@ function hydrateContact(contact: ContactInput, previous?: Contact): Contact {
     lastName: contact.lastName.trim(),
     phone: contact.phone.trim(),
     email: contact.email.trim(),
+    address: contact.address.trim(),
     notes: contact.notes.trim(),
     searchText: buildSearchText(contact),
     createdAt: previous?.createdAt ?? now,

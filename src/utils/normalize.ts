@@ -12,10 +12,11 @@ export function buildSearchText(contact: {
   lastName: string;
   phone: string;
   email: string;
+  address: string;
   notes: string;
 }): string {
   return normalizeText(
-    [contact.firstName, contact.lastName, contact.phone, contact.email, contact.notes]
+    [contact.firstName, contact.lastName, contact.phone, contact.email, contact.address, contact.notes]
       .filter(Boolean)
       .join(' '),
   );

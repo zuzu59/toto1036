@@ -32,6 +32,10 @@ const emit = defineEmits<{
         <strong>{{ props.contact.email || '—' }}</strong>
       </div>
       <div class="detail-line">
+        <span>Adresse</span>
+        <strong style="white-space: pre-wrap;">{{ props.contact.address || '—' }}</strong>
+      </div>
+      <div class="detail-line">
         <span>Notes</span>
         <strong style="white-space: pre-wrap;">{{ props.contact.notes || '—' }}</strong>
       </div>

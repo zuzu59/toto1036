@@ -20,6 +20,7 @@ const form = reactive<ContactInput>({
   lastName: '',
   phone: '',
   email: '',
+  address: '',
   notes: '',
 });
 
@@ -31,6 +32,7 @@ watch(
     form.lastName = contact?.lastName ?? '';
     form.phone = contact?.phone ?? '';
     form.email = contact?.email ?? '';
+    form.address = contact?.address ?? '';
     form.notes = contact?.notes ?? '';
   },
   { immediate: true },
@@ -49,6 +51,7 @@ function submit() {
     lastName: form.lastName,
     phone: form.phone,
     email: form.email,
+    address: form.address,
     notes: form.notes,
   });
 }
@@ -81,6 +84,11 @@ function submit() {
       <label class="label">
         <span>Email</span>
         <input v-model="form.email" class="field" type="email" autocomplete="email" />
+      </label>
+
+      <label class="label">
+        <span>Adresse</span>
+        <textarea v-model="form.address"></textarea>
       </label>
 
       <label class="label">
