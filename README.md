@@ -32,6 +32,18 @@ npm run dev
 npm run build
 ```
 
+## Déploiement GitHub Pages
+
+Un workflow GitHub Actions est configuré dans `.github/workflows/deploy-pages.yml`.
+
+Il suffit de pousser sur `master` ou `tutu` pour lancer le déploiement sur GitHub Pages.
+
+Le site est prévu pour être servi sous le chemin :
+
+```bash
+/toto1036/
+```
+
 ## Structure
 
 - `src/db.ts` : base Dexie
